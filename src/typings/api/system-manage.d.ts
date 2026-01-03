@@ -135,5 +135,89 @@ declare namespace Api {
       pId: number;
       children?: MenuTree[];
     };
+
+    /** action log */
+    type ActionLog = {
+      /** log id */
+      id: string;
+      /** log type */
+      logType: number;
+      /** module name */
+      moduleName: string;
+      /** action name */
+      actionName: string;
+      /** user account */
+      iTCode: string;
+      /** action url */
+      actionUrl: string;
+      /** action time */
+      actionTime: string;
+      /** duration in ms */
+      duration: number;
+      /** ip address */
+      ip: string;
+      /** remark */
+      remark?: string;
+    };
+
+    /** action log search params */
+    type ActionLogSearchParams = CommonType.RecordNullable<{
+      ITCode?: string;
+      ActionUrl?: string;
+      LogType?: number[];
+      ActionTime?: [string, string];
+      IP?: string;
+      Duration?: [number, number];
+    }> &
+      CommonSearchParams;
+
+    /** action log list */
+    type ActionLogList = Common.PaginatingQueryRecord<ActionLog>;
+
+    /** cache item */
+    type CacheItem = {
+      /** cache key */
+      key: string;
+      /** cache value */
+      value?: string;
+      /** value type */
+      valueType: 'json' | 'string' | 'number' | 'boolean';
+      /** latest value preview */
+      latestValue?: string;
+      /** hits count */
+      hits: number;
+      /** misses count */
+      misses: number;
+      /** expiration time */
+      expirationTime?: string;
+      /** expiration seconds */
+      expirationSeconds?: number;
+      /** size in bytes */
+      sizeInBytes: number;
+    };
+
+    /** cache search params */
+    type CacheSearchParams = CommonType.RecordNullable<{
+      keywords?: string;
+      prefix?: string;
+    }> &
+      CommonSearchParams;
+
+    /** cache list */
+    type CacheList = Common.PaginatingQueryRecord<CacheItem>;
+
+    /** cache statistics */
+    type CacheStatistics = {
+      /** total keys count */
+      totalKeys: number;
+      /** total hits count */
+      totalHits: number;
+      /** total misses count */
+      totalMisses: number;
+      /** hit rate */
+      hitRate: number;
+      /** total size in bytes */
+      totalSizeInBytes: number;
+    };
   }
 }

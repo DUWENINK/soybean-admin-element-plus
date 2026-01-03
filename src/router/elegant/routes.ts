@@ -221,7 +221,7 @@ export const generatedRoutes: GeneratedRoute[] = [
       title: 'home',
       i18nKey: 'route.home',
       icon: 'mdi:monitor-dashboard',
-      order: 1
+      order: 1,
     }
   },
   {
@@ -261,6 +261,24 @@ export const generatedRoutes: GeneratedRoute[] = [
       roles: ['R_ADMIN']
     },
     children: [
+      {
+        name: 'manage_actionlog',
+        path: '/manage/actionlog',
+        component: 'view.manage_actionlog',
+        meta: {
+          title: 'manage_actionlog',
+          i18nKey: 'route.manage_actionlog'
+        }
+      },
+      {
+        name: 'manage_cache',
+        path: '/manage/cache',
+        component: 'view.manage_cache',
+        meta: {
+          title: 'manage_cache',
+          i18nKey: 'route.manage_cache'
+        }
+      },
       {
         name: 'manage_menu',
         path: '/manage/menu',

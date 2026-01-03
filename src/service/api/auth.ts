@@ -1,25 +1,30 @@
 import { request } from '../request';
 
 /**
- * Login
+ * Login with JWT
  *
- * @param userName User name
+ * @param username User name
  * @param password Password
+ * @param rememberMe Remember me option
  */
-export function fetchLogin(userName: string, password: string) {
+export function fetchLogin(username: string, password: string, rememberMe = false) {
   return request<Api.Auth.LoginToken>({
-    url: '/auth/login',
+    url: '/api/Account/LoginJwt',
     method: 'post',
     data: {
-      userName,
-      password
+      username,
+      password,
+      rememberMe
     }
   });
 }
 
 /** Get user info */
 export function fetchGetUserInfo() {
-  return request<Api.Auth.UserInfo>({ url: '/auth/getUserInfo' });
+  return request<Api.Auth.UserInfo>({
+    url: '/api/Account/CheckUserInfo',
+    method: 'post'
+  });
 }
 
 /**
@@ -29,20 +34,20 @@ export function fetchGetUserInfo() {
  */
 export function fetchRefreshToken(refreshToken: string) {
   return request<Api.Auth.LoginToken>({
-    url: '/auth/refreshToken',
-    method: 'post',
-    data: {
+    url: '/api/Account/RefreshToken',
+    method: 'get',
+    params: {
       refreshToken
     }
   });
 }
 
 /**
- * return custom backend error
- *
- * @param code error code
- * @param msg error message
+ * Logout
  */
-export function fetchCustomBackendError(code: string, msg: string) {
-  return request({ url: '/auth/error', params: { code, msg } });
+export function fetchLogout() {
+  return request({
+    url: '/api/Account/Logout',
+    method: 'post'
+  });
 }

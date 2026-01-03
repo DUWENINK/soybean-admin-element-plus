@@ -2,6 +2,7 @@ import { createAlovaRequest } from '@sa/alova';
 import { createAlovaMockAdapter } from '@sa/alova/mock';
 import adapterFetch from '@sa/alova/fetch';
 import { useAuthStore } from '@/store/modules/auth';
+import { localStg } from '@/utils/storage';
 import { getServiceBaseURL } from '@/utils/service';
 import { $t } from '@/locales';
 import featureUsers20241014 from '../mocks/feature-users-20241014';
@@ -33,8 +34,11 @@ export const alova = createAlovaRequest(
   {
     onRequest({ config }) {
       const Authorization = getAuthorization();
+      const lang = localStg.get('lang') || 'zh-CN';
+      const acceptLanguage = lang === 'zh-CN' ? 'zh-CN,zh;q=0.9' : 'en-US,en;q=0.9';
       config.headers.Authorization = Authorization;
       config.headers.apifoxToken = 'XL299LiMEDZ0H5h3A29PxwQXdMJqWyY2';
+      config.headers['accept-language'] = acceptLanguage;
     },
     tokenRefresher: {
       async isExpired(response) {

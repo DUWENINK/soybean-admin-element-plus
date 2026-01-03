@@ -22,17 +22,21 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
   const token = ref(getToken());
 
   const userInfo: Api.Auth.UserInfo = reactive({
-    userId: '',
-    userName: '',
-    roles: [],
-    buttons: []
+    Id: '',
+    ITCode: '',
+    Name: '',
+    PhotoId: '',
+    IsSuperUser: false,
+    Roles: [],
+    Departments: [],
+    TimeTick: 0
   });
 
   /** is super role in static route */
   const isStaticSuper = computed(() => {
-    const { VITE_AUTH_ROUTE_MODE, VITE_STATIC_SUPER_ROLE } = import.meta.env;
+    const { VITE_AUTH_ROUTE_MODE } = import.meta.env;
 
-    return VITE_AUTH_ROUTE_MODE === 'static' && userInfo.roles.includes(VITE_STATIC_SUPER_ROLE);
+    return VITE_AUTH_ROUTE_MODE === 'static' && userInfo.IsSuperUser;
   });
 
   /** Is login */
@@ -56,12 +60,12 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
 
   /** Record the user ID of the previous login session Used to compare with the current user ID on next login */
   function recordUserId() {
-    if (!userInfo.userId) {
+    if (!userInfo.Id) {
       return;
     }
 
     // Store current user ID locally for next login comparison
-    localStg.set('lastLoginUserId', userInfo.userId);
+    localStg.set('lastLoginUserId', userInfo.Id);
   }
 
   /**
@@ -70,14 +74,14 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
    * @returns {boolean} Whether to clear all tabs
    */
   function checkTabClear(): boolean {
-    if (!userInfo.userId) {
+    if (!userInfo.Id) {
       return false;
     }
 
     const lastLoginUserId = localStg.get('lastLoginUserId');
 
     // Clear all tabs if current user is different from previous user
-    if (lastLoginUserId !== userInfo.userId) {
+    if (lastLoginUserId !== userInfo.Id) {
       localStg.remove('globalTabs');
       tabStore.clearTabs();
 
@@ -115,7 +119,7 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
 
         window.$notification?.success({
           title: $t('page.login.common.loginSuccess'),
-          message: $t('page.login.common.welcomeBack', { userName: userInfo.userName }),
+          message: $t('page.login.common.welcomeBack', { userName: userInfo.Name }),
           duration: 4500
         });
       }
@@ -128,14 +132,24 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
 
   async function loginByToken(loginToken: Api.Auth.LoginToken) {
     // 1. stored in the localStorage, the later requests need it in headers
-    localStg.set('token', loginToken.token);
-    localStg.set('refreshToken', loginToken.refreshToken);
+    // Support old project token format: access_token and refresh_token
+    const tokenValue = loginToken.access_token || (loginToken as any).token;
+    const refreshTokenValue = loginToken.refresh_token || (loginToken as any).refreshToken;
+
+    localStg.set('token', tokenValue);
+    localStg.set('refreshToken', refreshTokenValue);
+
+    // Store token expiration time if available
+    if (loginToken.expires_in) {
+      const expireTime = Date.now() + loginToken.expires_in * 1000;
+      localStg.set('tokenExpireTime', expireTime);
+    }
 
     // 2. get user info
     const pass = await getUserInfo();
 
     if (pass) {
-      token.value = loginToken.token;
+      token.value = tokenValue;
 
       return true;
     }

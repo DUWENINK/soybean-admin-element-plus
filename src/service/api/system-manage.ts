@@ -53,3 +53,73 @@ export function fetchGetMenuTree() {
     method: 'get'
   });
 }
+
+/** get action log list */
+export function fetchGetActionLogList(params?: Api.SystemManage.ActionLogSearchParams) {
+  return request<Api.SystemManage.ActionLogList>({
+    url: '/api/ActionLog/Search',
+    method: 'post',
+    data: params
+  });
+}
+
+/** delete action log */
+export function fetchDeleteActionLog(ids: string[]) {
+  return request<boolean>({
+    url: '/api/ActionLog/BatchDelete',
+    method: 'post',
+    data: ids
+  });
+}
+
+/** get cache list */
+export function fetchGetCacheList(params?: Api.SystemManage.CacheSearchParams) {
+  return request<Api.SystemManage.CacheList>({
+    url: '/api/CacheManagement/search',
+    method: 'post',
+    data: params
+  });
+}
+
+/** get cache statistics */
+export function fetchGetCacheStatistics() {
+  return request<Api.SystemManage.CacheStatistics>({
+    url: '/api/CacheManagement/statistics',
+    method: 'get'
+  });
+}
+
+/** add cache */
+export function fetchAddCache(data: Omit<Api.SystemManage.CacheItem, 'hits' | 'misses' | 'sizeInBytes' | 'latestValue' | 'expirationTime'>) {
+  return request<boolean>({
+    url: '/api/CacheManagement/item',
+    method: 'post',
+    data
+  });
+}
+
+/** update cache */
+export function fetchUpdateCache(data: Omit<Api.SystemManage.CacheItem, 'hits' | 'misses' | 'sizeInBytes' | 'latestValue' | 'expirationTime'>) {
+  return request<boolean>({
+    url: '/api/CacheManagement/item',
+    method: 'put',
+    data
+  });
+}
+
+/** delete cache */
+export function fetchDeleteCache(key: string) {
+  return request<boolean>({
+    url: `/api/CacheManagement/item/${encodeURIComponent(key)}`,
+    method: 'delete'
+  });
+}
+
+/** batch delete cache */
+export function fetchBatchDeleteCache(keys: string[]) {
+  return request<number>({
+    url: '/api/CacheManagement/batch-delete',
+    method: 'post',
+    data: { keys }
+  });
+}

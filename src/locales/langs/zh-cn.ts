@@ -44,6 +44,9 @@ const local: App.I18n.Schema = {
     update: '更新',
     updateSuccess: '更新成功',
     userCenter: '个人中心',
+    to: '至',
+    startDate: '开始日期',
+    endDate: '结束日期',
     yesOrNo: {
       yes: '是',
       no: '否'
@@ -193,6 +196,8 @@ const local: App.I18n.Schema = {
     'manage_user-detail': '用户详情',
     manage_role: '角色管理',
     manage_menu: '菜单管理',
+    manage_actionlog: '操作日志',
+    manage_cache: '缓存管理',
     'multi-menu': '多级菜单',
     'multi-menu_first': '菜单一',
     'multi-menu_first_child': '菜单一子菜单',
@@ -485,6 +490,68 @@ const local: App.I18n.Schema = {
         iconType: {
           iconify: 'iconify图标',
           local: '本地图标'
+        }
+      },
+      actionlog: {
+        title: '操作日志',
+        logType: '日志类型',
+        moduleName: '模块名称',
+        actionName: '操作名称',
+        account: '账号',
+        accountPlaceholder: '请输入账号',
+        url: '访问地址',
+        urlPlaceholder: '请输入访问地址',
+        actionTime: '操作时间',
+        duration: '执行时间(ms)',
+        ip: 'IP地址',
+        ipPlaceholder: '请输入IP地址',
+        typeNormal: '正常',
+        typeException: '异常',
+        typeDebug: '调试',
+        lastHour: '最近1小时',
+        today: '今天',
+        last7Days: '最近7天'
+      },
+      cache: {
+        title: '缓存管理',
+        key: '缓存键',
+        keywords: '关键字',
+        keywordsPlaceholder: '搜索缓存键',
+        prefix: '前缀',
+        prefixPlaceholder: '按前缀过滤',
+        valueType: '值类型',
+        valueTypeString: '字符串',
+        valueTypeNumber: '数字',
+        valueTypeBoolean: '布尔值',
+        value: '缓存值',
+        latestValue: '最新值',
+        hits: '命中次数',
+        misses: '未命中次数',
+        expirationTime: '过期时间',
+        expirationSeconds: '过期时间(秒)',
+        permanent: '永久',
+        size: '大小',
+        totalKeys: '总缓存键数',
+        totalHits: '总命中次数',
+        hitRate: '命中率',
+        totalSize: '总大小',
+        addCache: '新增缓存',
+        editCache: '编辑缓存',
+        form: {
+          key: {
+            required: '请输入缓存键',
+            placeholder: '请输入缓存键'
+          },
+          value: {
+            required: '请输入缓存值',
+            placeholder: '请输入缓存值'
+          },
+          valueType: {
+            placeholder: '请选择值类型'
+          },
+          expirationSeconds: {
+            placeholder: '留空使用默认值(3600秒)'
+          }
         }
       }
     }

@@ -23,15 +23,26 @@ export const request = createFlatRequest(
       refreshTokenPromise: null
     } as RequestInstanceState,
     transform(response: AxiosResponse<App.Service.Response<any>>) {
+      // Support old project response format: { Code, Message, Data }
+      if ('Data' in response.data && 'Code' in response.data) {
+        return response.data.Data;
+      }
       return response.data.data;
     },
     async onRequest(config) {
       const Authorization = getAuthorization();
-      Object.assign(config.headers, { Authorization });
+      const lang = localStg.get('lang') || 'zh-CN';
+      const acceptLanguage = lang === 'zh-CN' ? 'zh-CN,zh;q=0.9' : 'en-US,en;q=0.9';
+      Object.assign(config.headers, { Authorization, 'accept-language': acceptLanguage });
 
       return config;
     },
     isBackendSuccess(response) {
+      // Support old project response format: { Code, Message, Data }
+      if ('Code' in response.data) {
+        // In old project, Code 200 means success
+        return response.data.Code === 200;
+      }
       // when the backend response code is "0000"(default), it means the request is success
       // to change this logic by yourself, you can modify the `VITE_SERVICE_SUCCESS_CODE` in `.env` file
       return String(response.data.code) === import.meta.env.VITE_SERVICE_SUCCESS_CODE;
@@ -88,7 +99,9 @@ export const request = createFlatRequest(
         const success = await handleExpiredRequest(request.state);
         if (success) {
           const Authorization = getAuthorization();
-          Object.assign(response.config.headers, { Authorization });
+          const lang = localStg.get('lang') || 'zh-CN';
+          const acceptLanguage = lang === 'zh-CN' ? 'zh-CN,zh;q=0.9' : 'en-US,en;q=0.9';
+          Object.assign(response.config.headers, { Authorization, 'accept-language': acceptLanguage });
 
           return instance.request(response.config) as Promise<AxiosResponse>;
         }
@@ -104,8 +117,10 @@ export const request = createFlatRequest(
 
       // get backend error message and code
       if (error.code === BACKEND_ERROR_CODE) {
-        message = error.response?.data?.msg || message;
-        backendErrorCode = String(error.response?.data?.code || '');
+        // Support old project response format: { Code, Message, Data }
+        const responseData = error.response?.data;
+        message = responseData?.Message || responseData?.msg || message;
+        backendErrorCode = String(responseData?.Code || responseData?.code || '');
       }
 
       // the error message is displayed in the modal
@@ -139,7 +154,9 @@ export const demoRequest = createRequest(
       // set token
       const token = localStg.get('token');
       const Authorization = token ? `Bearer ${token}` : null;
-      Object.assign(headers, { Authorization });
+      const lang = localStg.get('lang') || 'zh-CN';
+      const acceptLanguage = lang === 'zh-CN' ? 'zh-CN,zh;q=0.9' : 'en-US,en;q=0.9';
+      Object.assign(headers, { Authorization, 'accept-language': acceptLanguage });
 
       return config;
     },

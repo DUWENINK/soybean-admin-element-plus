@@ -4,7 +4,7 @@ import { defineStore } from 'pinia';
 import { useBoolean } from '@sa/hooks';
 import type { CustomRoute, ElegantConstRoute, LastLevelRouteKey, RouteKey, RouteMap } from '@elegant-router/types';
 import { router } from '@/router';
-import { fetchGetConstantRoutes, fetchGetUserRoutes, fetchIsRouteExist } from '@/service/api';
+import { fetchGetUserMenus, fetchGetUserRoutes, fetchIsRouteExist } from '@/service/api';
 import { SetupStoreId } from '@/enum';
 import { createStaticRoutes, getAuthVueRoutes } from '@/router/routes';
 import { ROOT_ROUTE } from '@/router/routes/builtin';
@@ -22,6 +22,12 @@ import {
   transformMenuToSearchMenus,
   updateLocaleOfGlobalMenus
 } from './shared';
+import {
+  getFirstPageRoute,
+  getPermissionsFromMenus,
+  getRouteNameFromPath,
+  transformMenusToRoutes
+} from './menu-transform';
 
 export const useRouteStore = defineStore(SetupStoreId.Route, () => {
   const authStore = useAuthStore();
@@ -154,18 +160,9 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
 
     const staticRoute = createStaticRoutes();
 
-    if (authRouteMode.value === 'static') {
-      addConstantRoutes(staticRoute.constantRoutes);
-    } else {
-      const { data, error } = await fetchGetConstantRoutes();
-
-      if (!error) {
-        addConstantRoutes(data);
-      } else {
-        // if fetch constant routes failed, use static constant routes
-        addConstantRoutes(staticRoute.constantRoutes);
-      }
-    }
+    // Always use static constant routes for old project
+    // Constant routes (login, 404, etc.) don't need to be fetched from backend
+    addConstantRoutes(staticRoute.constantRoutes);
 
     handleConstantAndAuthRoutes();
 
@@ -177,7 +174,7 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
   /** Init auth route */
   async function initAuthRoute() {
     // check if user info is initialized
-    if (!authStore.userInfo.userId) {
+    if (!authStore.userInfo.Id) {
       await authStore.initUserInfo();
     }
 
@@ -209,6 +206,36 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
 
   /** Init dynamic auth route */
   async function initDynamicAuthRoute() {
+    // Try to fetch menus from old project API first
+    const { data: menuData, error: menuError } = await fetchGetUserMenus();
+
+    if (!menuError && menuData) {
+      // Transform old project menus to routes
+      const routes = transformMenusToRoutes(menuData);
+
+      // Extract permissions from menus
+      const permissions = getPermissionsFromMenus(menuData);
+
+      // Store permissions in auth store (if needed)
+      // authStore.userInfo.buttons = permissions;
+
+      if (routes.length > 0) {
+        addAuthRoutes(routes);
+        handleConstantAndAuthRoutes();
+
+        // Use default home route from environment variable
+        // This keeps the frontend-defined home page (like dashboard/home)
+        // Backend menus will be additional routes, not replace the home page
+        const defaultHome = import.meta.env.VITE_ROUTE_HOME as LastLevelRouteKey;
+        setRouteHome(defaultHome);
+        handleUpdateRootRouteRedirect(defaultHome);
+
+        setIsInitAuthRoute(true);
+        return;
+      }
+    }
+
+    // Fallback to new project API if old API fails
     const { data, error } = await fetchGetUserRoutes();
 
     if (!error) {
@@ -292,18 +319,21 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
    * @param routePath Route path
    */
   async function getIsAuthRouteExist(routePath: RouteMap[RouteKey]) {
-    const routeName = getRouteName(routePath);
-
-    if (!routeName) {
+    if (!routePath) {
       return false;
     }
 
     if (authRouteMode.value === 'static') {
+      const routeName = getRouteName(routePath);
+      if (!routeName) {
+        return false;
+      }
       const { authRoutes: staticAuthRoutes } = createStaticRoutes();
       return isRouteExistByRouteName(routeName, staticAuthRoutes);
     }
 
-    const { data } = await fetchIsRouteExist(routeName);
+    // For dynamic mode, pass the route path directly to backend
+    const { data } = await fetchIsRouteExist(routePath);
 
     return data;
   }

@@ -17,8 +17,16 @@ async function handleRefreshToken() {
   const rToken = localStg.get('refreshToken') || '';
   const { error, data } = await fetchRefreshToken(rToken);
   if (!error) {
-    localStg.set('token', data.token);
-    localStg.set('refreshToken', data.refreshToken);
+    // Support old project token format: access_token and refresh_token
+    localStg.set('token', data.access_token || data.token);
+    localStg.set('refreshToken', data.refresh_token || data.refreshToken);
+
+    // Store token expiration time if available
+    if (data.expires_in) {
+      const expireTime = Date.now() + data.expires_in * 1000;
+      localStg.set('tokenExpireTime', expireTime);
+    }
+
     return true;
   }
 
