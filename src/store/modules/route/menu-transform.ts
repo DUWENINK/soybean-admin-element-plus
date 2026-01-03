@@ -2,8 +2,13 @@ import type { ElegantConstRoute } from '@elegant-router/types';
 
 /**
  * Transform backend menu to elegant route
+ * @param menu - The menu item to transform
+ * @param parentMenuType - The type of parent menu (to determine if parent has layout)
  */
-export function transformMenuToRoute(menu: Api.Menu.MenuTreeDto): ElegantConstRoute | null {
+export function transformMenuToRoute(
+  menu: Api.Menu.MenuTreeDto,
+  parentMenuType?: 'Folder' | 'Page' | 'Api' | 'External'
+): ElegantConstRoute | null {
   // Skip API type menus as they are permission markers, not routes
   if (menu.MenuType === 'Api') {
     return null;
@@ -12,10 +17,13 @@ export function transformMenuToRoute(menu: Api.Menu.MenuTreeDto): ElegantConstRo
   // For Folder type menus, generate a path from the name if Resource is null
   const menuPath = menu.Resource || `/${getRouteNameFromPath(menu.Name || 'folder')}`;
 
+  // Check if parent is a Folder with layout
+  const hasLayoutParent = parentMenuType === 'Folder';
+
   const route: ElegantConstRoute = {
     name: getRouteNameFromPath(menuPath),
     path: menuPath,
-    component: getComponentPath(menu),
+    component: getComponentPath(menu, hasLayoutParent),
     meta: {
       title: menu.Name,
       i18nKey: undefined,
@@ -26,9 +34,9 @@ export function transformMenuToRoute(menu: Api.Menu.MenuTreeDto): ElegantConstRo
     }
   };
 
-  // Handle children
+  // Handle children - pass current menu type as parent type
   if (menu.Children && menu.Children.length > 0) {
-    const childRoutes = menu.Children.map(child => transformMenuToRoute(child)).filter(
+    const childRoutes = menu.Children.map(child => transformMenuToRoute(child, menu.MenuType)).filter(
       (r): r is ElegantConstRoute => r !== null
     );
     if (childRoutes.length > 0) {
@@ -41,11 +49,13 @@ export function transformMenuToRoute(menu: Api.Menu.MenuTreeDto): ElegantConstRo
 
 /**
  * Get route name from resource path
+ * Converts path to underscore format to match frontend route naming convention
+ * Example: /manage/user -> manage_user
  */
 export function getRouteNameFromPath(path: string): string {
   if (!path || path === '/') return 'root';
 
-  // Remove leading/trailing slashes and convert to camelCase
+  // Remove leading/trailing slashes and convert to underscore format
   const parts = path
     .replace(/^\/|\/$/g, '')
     .split('/')
@@ -53,21 +63,20 @@ export function getRouteNameFromPath(path: string): string {
 
   if (parts.length === 0) return 'root';
 
-  // Convert to camelCase: /system/user -> systemUser
+  // Convert to underscore format: /manage/user -> manage_user
+  // This matches the frontend route naming convention (manage_user, manage_menu, etc.)
   return parts
-    .map((part, index) => {
-      const cleaned = part.replace(/[^a-zA-Z0-9]/g, '');
-      if (index === 0) return cleaned;
-      return cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
-    })
-    .join('');
+    .map(part => part.replace(/[^a-zA-Z0-9-]/g, ''))
+    .join('_');
 }
 
 /**
  * Get component path for route
  * Falls back to placeholder component if specified component doesn't exist
+ * @param menu - The menu item
+ * @param hasLayoutParent - Whether the parent route already has a layout
  */
-function getComponentPath(menu: Api.Menu.MenuTreeDto): string {
+function getComponentPath(menu: Api.Menu.MenuTreeDto, hasLayoutParent = false): string {
   if (menu.MenuType === 'External') {
     return 'layout.base$view.iframe-page';
   }
@@ -94,11 +103,13 @@ function getComponentPath(menu: Api.Menu.MenuTreeDto): string {
       console.warn(`[Menu Transform] Component path: ${componentPath} for menu: ${menu.Name}`);
     }
 
-    return `layout.base$view.${componentPath}`;
+    // If parent already has layout, just use view component
+    // Otherwise use layout.base$view format for top-level pages
+    return hasLayoutParent ? `view.${componentPath}` : `layout.base$view.${componentPath}`;
   }
 
   // No component specified - use placeholder
-  return 'layout.base$view.404';
+  return hasLayoutParent ? 'view.404' : 'layout.base$view.404';
 }
 
 /**
