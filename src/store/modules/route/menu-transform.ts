@@ -13,7 +13,7 @@ export function transformMenuToRoute(
   if (menu.MenuType === 'Api') {
     return null;
   }
-
+debugger
   // For Folder type menus, generate a path from the name if Resource is null
   const menuPath = menu.Resource || `/${getRouteNameFromPath(menu.Name || 'folder')}`;
 
@@ -54,7 +54,7 @@ export function transformMenuToRoute(
  */
 export function getRouteNameFromPath(path: string): string {
   if (!path || path === '/') return 'root';
-
+debugger
   // Remove leading/trailing slashes and convert to underscore format
   const parts = path
     .replace(/^\/|\/$/g, '')
