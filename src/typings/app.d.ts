@@ -667,11 +667,28 @@ declare namespace App {
             type: {
               directory: string;
               menu: string;
+              external: string;
+              api: string;
             };
             iconType: {
               iconify: string;
               local: string;
             };
+            iconSelector: {
+              title: string;
+              search: string;
+              total: string;
+            };
+            permissionCode: string;
+            show: string;
+            resource: string;
+            component: string;
+            viewMode: {
+              table: string;
+              tree: string;
+            };
+            dragSort: string;
+            refreshCache: string;
           };
         };
       };

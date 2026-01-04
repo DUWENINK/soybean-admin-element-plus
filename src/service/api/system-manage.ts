@@ -48,8 +48,78 @@ export function fetchGetAllPages() {
 
 /** get menu tree */
 export function fetchGetMenuTree() {
-  return request<Api.SystemManage.MenuTree[]>({
-    url: '/systemManage/getMenuTree',
+  return request<Api.SystemManage.Menu[]>({
+    url: '/api/Menu/Search',
+    method: 'post',
+    data: {}
+  });
+}
+
+/** get menu by id */
+export function fetchGetMenuById(id: number | string) {
+  return request<Api.SystemManage.Menu>({
+    url: `/api/Menu/${id}`,
+    method: 'get'
+  });
+}
+
+/** add menu */
+export function fetchAddMenu(data: Partial<Api.SystemManage.Menu>) {
+  return request<boolean>({
+    url: '/api/Menu/Add',
+    method: 'post',
+    data
+  });
+}
+
+/** update menu */
+export function fetchUpdateMenu(data: Partial<Api.SystemManage.Menu>) {
+  return request<boolean>({
+    url: '/api/Menu/Edit',
+    method: 'put',
+    data
+  });
+}
+
+/** delete menu */
+export function fetchDeleteMenu(id: number | string) {
+  return request<boolean>({
+    url: `/api/Menu/Delete/${id}`,
+    method: 'post'
+  });
+}
+
+/** batch delete menus */
+export function fetchBatchDeleteMenus(ids: (number | string)[]) {
+  return request<boolean>({
+    url: '/api/Menu/BatchDelete',
+    method: 'post',
+    data: ids
+  });
+}
+
+/** update menu order */
+export function fetchUpdateMenuOrder(params: Api.SystemManage.UpdateMenuOrderParams) {
+  return request<boolean>({
+    url: '/api/Menu/UpdateMenuOrder',
+    method: 'post',
+    data: params
+  });
+}
+
+/** update menu icon */
+export function fetchUpdateMenuIcon(id: number | string, icon: string) {
+  return request<boolean>({
+    url: '/api/Menu/MenuIconChange',
+    method: 'post',
+    data: { id, icon }
+  });
+}
+
+/** refresh menu cache */
+export function fetchRefreshMenuCache() {
+  return request<boolean>({
+    url: '/api/Menu/RefreshMenu',
     method: 'get'
   });
 }

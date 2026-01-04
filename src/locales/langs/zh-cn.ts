@@ -485,12 +485,29 @@ const local: App.I18n.Schema = {
         addChildMenu: '新增子菜单',
         type: {
           directory: '目录',
-          menu: '菜单'
+          menu: '菜单',
+          external: '外链',
+          api: 'API权限'
         },
         iconType: {
           iconify: 'iconify图标',
           local: '本地图标'
-        }
+        },
+        iconSelector: {
+          title: '选择图标',
+          search: '搜索图标...',
+          total: '共 {count} 个图标'
+        },
+        permissionCode: '权限标识',
+        show: '显示状态',
+        resource: '资源路径',
+        component: '组件路径',
+        viewMode: {
+          table: '表格视图',
+          tree: '树形视图'
+        },
+        dragSort: '拖拽排序',
+        refreshCache: '刷新缓存'
       },
       actionlog: {
         title: '操作日志',

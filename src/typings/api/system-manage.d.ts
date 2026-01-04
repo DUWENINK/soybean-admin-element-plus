@@ -62,12 +62,14 @@ declare namespace Api {
     type UserList = Common.PaginatingQueryRecord<User>;
 
     /**
-     * menu type
+     * menu type enum (from old project)
      *
-     * - "1": directory
-     * - "2": menu
+     * - "Folder": directory
+     * - "Page": menu page
+     * - "External": external link
+     * - "Api": api permission
      */
-    type MenuType = '1' | '2';
+    type MenuType = 'Folder' | 'Page' | 'External' | 'Api';
 
     type MenuButton = {
       /**
@@ -102,29 +104,31 @@ declare namespace Api {
       | 'query'
     >;
 
-    type Menu = Common.CommonRecord<{
-      /** parent menu id */
-      parentId: number;
-      /** menu type */
-      menuType: MenuType;
+    /** Menu data structure (compatible with old project) */
+    type Menu = {
+      /** menu ID */
+      Id: string;
       /** menu name */
-      menuName: string;
-      /** route name */
-      routeName: string;
-      /** route path */
-      routePath: string;
-      /** component */
-      component?: string;
-      /** iconify icon name or local icon name */
-      icon: string;
-      /** icon type */
-      iconType: IconType;
-      /** buttons */
-      buttons?: MenuButton[] | null;
-      /** children menu */
-      children?: Menu[] | null;
-    }> &
-      MenuPropsOfRoute;
+      Name: string;
+      /** menu type */
+      MenuType: MenuType;
+      /** resource path */
+      Resource: string;
+      /** component path */
+      Component?: string;
+      /** parent menu ID */
+      ParentId?: string;
+      /** icon */
+      Icon: string;
+      /** sort order */
+      Order: number;
+      /** whether to show */
+      Show: boolean;
+      /** permission code */
+      PermissionCode?: string;
+      /** children menus */
+      Children?: Menu[];
+    };
 
     /** menu list */
     type MenuList = Common.PaginatingQueryRecord<Menu>;
@@ -134,6 +138,35 @@ declare namespace Api {
       label: string;
       pId: number;
       children?: MenuTree[];
+    };
+
+    /**
+     * menu move type
+     *
+     * - "MoveToParent": move to parent level
+     * - "MoveToSibling": move to sibling level
+     */
+    type MenuMoveType = 'MoveToParent' | 'MoveToSibling';
+
+    /**
+     * menu insert position
+     *
+     * - "Before": insert before target
+     * - "After": insert after target
+     * - "AsChild": insert as child of target
+     */
+    type MenuInsertPosition = 'Before' | 'After' | 'AsChild';
+
+    /** update menu order params */
+    type UpdateMenuOrderParams = {
+      /** menu id to move */
+      id: number | string;
+      /** target menu id */
+      targetId: number | string;
+      /** move type */
+      moveType: MenuMoveType;
+      /** insert position */
+      insertPosition: MenuInsertPosition;
     };
 
     /** action log */
