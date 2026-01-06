@@ -6,6 +6,7 @@ import { useForm, useFormRules } from '@/hooks/common/form';
 import { $t } from '@/locales';
 import SvgIcon from '@/components/custom/svg-icon.vue';
 import IconSelector from './icon-selector.vue';
+import LocalizationEditor from './localization-editor.vue';
 
 defineOptions({ name: 'MenuOperateModal' });
 
@@ -89,22 +90,37 @@ function handleIconSelect(iconName: string) {
   model.value.Icon = iconName;
 }
 
+// Localization editor
+const localizationEditorVisible = ref(false);
+
+function openLocalizationEditor() {
+  if (!model.value.Name) {
+    window.$message?.warning('请先输入菜单名称Key');
+    return;
+  }
+  localizationEditorVisible.value = true;
+}
+
+function handleLocalizationSubmitted() {
+  // Refresh if needed
+}
+
 // Show component field for Page menu type
 const showComponent = computed(() => model.value.MenuType === 'Page');
 
-// Show resource field for Page and External menu types
-const showResource = computed(() => model.value.MenuType === 'Page' || model.value.MenuType === 'External');
+// Show resource field for Folder, Page and External menu types (not Api)
+const showResource = computed(() => model.value.MenuType !== 'Api');
 
 const resourceLabel = computed(() => {
   if (model.value.MenuType === 'Page') return $t('page.manage.menu.routePath');
   if (model.value.MenuType === 'External') return $t('page.manage.menu.href');
-  return $t('page.manage.menu.resource');
+  return $t('page.manage.menu.routePath');
 });
 
 const resourcePlaceholder = computed(() => {
-  if (model.value.MenuType === 'Page') return '/user/list';
   if (model.value.MenuType === 'External') return 'https://example.com';
-  return '';
+  if (model.value.MenuType === 'Folder') return '/system';
+  return '/user/list';
 });
 
 const pageOptions = computed(() => {
@@ -145,8 +161,44 @@ function closeModal() {
   visible.value = false;
 }
 
+function validateModel(): boolean {
+  const { Name, MenuType, Resource, Component, PermissionCode } = model.value;
+
+  // Name is always required
+  if (!Name?.trim()) {
+    window.$message?.error($t('page.manage.menu.form.menuName'));
+    return false;
+  }
+
+  // Validate Resource for Folder, Page, External
+  if ((MenuType === 'Folder' || MenuType === 'Page' || MenuType === 'External') && !Resource?.trim()) {
+    const msg = MenuType === 'External' ? $t('page.manage.menu.form.href') : $t('page.manage.menu.form.routePath');
+    window.$message?.error(msg);
+    return false;
+  }
+
+  // Validate Component for Page
+  if (MenuType === 'Page' && !Component?.trim()) {
+    window.$message?.error($t('page.manage.menu.form.page'));
+    return false;
+  }
+
+  // Validate PermissionCode for Api
+  if (MenuType === 'Api' && !PermissionCode?.trim()) {
+    window.$message?.error('请输入权限标识');
+    return false;
+  }
+
+  return true;
+}
+
 async function handleSubmit() {
   await validate();
+
+  // Additional validation based on menu type
+  if (!validateModel()) {
+    return;
+  }
 
   const submitData: Partial<Api.SystemManage.Menu> = {
     ...model.value
@@ -192,7 +244,13 @@ watch(visible, () => {
 
           <ElCol :span="24">
             <ElFormItem :label="$t('page.manage.menu.menuName')" prop="Name">
-              <ElInput v-model="model.Name" :placeholder="$t('page.manage.menu.form.menuName')" />
+              <ElInput v-model="model.Name" :placeholder="$t('page.manage.menu.form.menuName')">
+                <template #append>
+                  <ElButton @click="openLocalizationEditor">
+                    <icon-mdi:translate class="text-icon" />
+                  </ElButton>
+                </template>
+              </ElInput>
             </ElFormItem>
           </ElCol>
 
@@ -254,6 +312,11 @@ watch(visible, () => {
     </template>
 
     <IconSelector v-model:visible="iconSelectorVisible" :current-icon="model.Icon" @select="handleIconSelect" />
+    <LocalizationEditor
+      v-model:visible="localizationEditorVisible"
+      :resource-key="model.Name"
+      @submitted="handleLocalizationSubmitted"
+    />
   </ElDialog>
 </template>
 

@@ -124,6 +124,32 @@ export function fetchRefreshMenuCache() {
   });
 }
 
+/** get menu localization by key */
+export function fetchGetMenuLocalization(key: string) {
+  return request<Api.SystemManage.MenuLocalization>({
+    url: '/api/Localization/GetByKey',
+    method: 'get',
+    params: { key }
+  });
+}
+
+/** save menu localization */
+export function fetchSaveMenuLocalization(data: Api.SystemManage.SaveMenuLocalizationParams) {
+  return request<{ id: string; key: string; message: string }>({
+    url: '/api/Localization/SaveMenuLocalization',
+    method: 'post',
+    data
+  });
+}
+
+/** clear localization cache */
+export function fetchClearLocalizationCache() {
+  return request<{ message: string }>({
+    url: '/api/Localization/ClearCache',
+    method: 'post'
+  });
+}
+
 /** get action log list */
 export function fetchGetActionLogList(params?: Api.SystemManage.ActionLogSearchParams) {
   return request<Api.SystemManage.ActionLogList>({

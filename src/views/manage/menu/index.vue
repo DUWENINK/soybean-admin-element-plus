@@ -9,11 +9,13 @@ import {
   fetchDeleteMenu,
   fetchGetAllPages,
   fetchGetMenuTree,
+  fetchUpdateMenu,
   fetchUpdateMenuOrder
 } from '@/service/api';
 import { $t } from '@/locales';
 import SvgIcon from '@/components/custom/svg-icon.vue';
 import MenuOperateModal, { type OperateType } from './modules/menu-operate-modal.vue';
+import LocalizationEditor from './modules/localization-editor.vue';
 
 defineOptions({ name: 'MenuManagement' });
 
@@ -178,6 +180,23 @@ function handleAddChildMenu(item: Api.SystemManage.Menu) {
   openModal();
 }
 
+// Localization editor
+const localizationEditorVisible = ref(false);
+const localizationResourceKey = ref('');
+
+function openLocalizationEditor() {
+  if (!selectedMenu.value?.Name) {
+    window.$message?.warning('请先输入菜单名称Key');
+    return;
+  }
+  localizationResourceKey.value = selectedMenu.value.Name;
+  localizationEditorVisible.value = true;
+}
+
+function handleLocalizationSubmitted() {
+  // Refresh if needed
+}
+
 const allPages = ref<string[]>([]);
 
 async function getAllPages() {
@@ -208,9 +227,48 @@ function findMenuInTree(menus: Api.SystemManage.Menu[], id: string): Api.SystemM
   return null;
 }
 
+// Validate selected menu before save
+function validateSelectedMenu(): boolean {
+  if (!selectedMenu.value) return false;
+
+  const { Name, MenuType, Resource, Component, PermissionCode } = selectedMenu.value;
+
+  // Name is always required
+  if (!Name?.trim()) {
+    window.$message?.error($t('page.manage.menu.form.menuName'));
+    return false;
+  }
+
+  // Validate Resource for Folder, Page, External
+  if ((MenuType === 'Folder' || MenuType === 'Page' || MenuType === 'External') && !Resource?.trim()) {
+    const msg = MenuType === 'External' ? $t('page.manage.menu.form.href') : $t('page.manage.menu.form.routePath');
+    window.$message?.error(msg);
+    return false;
+  }
+
+  // Validate Component for Page
+  if (MenuType === 'Page' && !Component?.trim()) {
+    window.$message?.error($t('page.manage.menu.form.page'));
+    return false;
+  }
+
+  // Validate PermissionCode for Api
+  if (MenuType === 'Api' && !PermissionCode?.trim()) {
+    window.$message?.error('请输入权限标识');
+    return false;
+  }
+
+  return true;
+}
+
 // Save selected menu changes
 async function handleSaveDetail() {
   if (!selectedMenu.value) return;
+
+  // Validate before save
+  if (!validateSelectedMenu()) {
+    return;
+  }
 
   loading.value = true;
   try {
@@ -447,18 +505,30 @@ function renderOperations(row: Api.SystemManage.Menu) {
                 </ElFormItem>
 
                 <ElFormItem :label="$t('page.manage.menu.menuName')">
-                  <ElInput v-model="selectedMenu.Name" :placeholder="$t('page.manage.menu.form.menuName')" />
+                  <ElInput v-model="selectedMenu.Name" :placeholder="$t('page.manage.menu.form.menuName')">
+                    <template #append>
+                      <ElButton @click="openLocalizationEditor">
+                        <icon-mdi:translate class="text-icon" />
+                      </ElButton>
+                    </template>
+                  </ElInput>
                 </ElFormItem>
 
                 <ElFormItem
-                  v-if="selectedMenu.MenuType === 'Page' || selectedMenu.MenuType === 'External'"
+                  v-if="selectedMenu.MenuType !== 'Api'"
                   :label="
-                    selectedMenu.MenuType === 'Page' ? $t('page.manage.menu.routePath') : $t('page.manage.menu.href')
+                    selectedMenu.MenuType === 'External' ? $t('page.manage.menu.href') : $t('page.manage.menu.routePath')
                   "
                 >
                   <ElInput
                     v-model="selectedMenu.Resource"
-                    :placeholder="selectedMenu.MenuType === 'Page' ? '/user/list' : 'https://example.com'"
+                    :placeholder="
+                      selectedMenu.MenuType === 'External'
+                        ? 'https://example.com'
+                        : selectedMenu.MenuType === 'Folder'
+                          ? '/system'
+                          : '/user/list'
+                    "
                   />
                 </ElFormItem>
 
@@ -556,6 +626,11 @@ function renderOperations(row: Api.SystemManage.Menu) {
         :row-data="editingData"
         :all-pages="allPages"
         @submitted="handleSubmitted"
+      />
+      <LocalizationEditor
+        v-model:visible="localizationEditorVisible"
+        :resource-key="localizationResourceKey"
+        @submitted="handleLocalizationSubmitted"
       />
     </ElCard>
   </div>

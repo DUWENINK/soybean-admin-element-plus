@@ -252,5 +252,43 @@ declare namespace Api {
       /** total size in bytes */
       totalSizeInBytes: number;
     };
+
+    /** menu localization translation */
+    type MenuLocalizationTranslation = {
+      /** translation id */
+      id: string;
+      /** culture code (e.g., "zh-CN", "en-US") */
+      culture: string;
+      /** translation value */
+      value: string;
+      /** whether verified */
+      isVerified: boolean;
+    };
+
+    /** menu localization */
+    type MenuLocalization = {
+      /** resource id */
+      id: string;
+      /** resource key */
+      key: string;
+      /** resource type */
+      resourceType: string;
+      /** description */
+      description?: string;
+      /** whether system resource */
+      isSystem: boolean;
+      /** translations */
+      translations: MenuLocalizationTranslation[];
+    };
+
+    /** save menu localization params */
+    type SaveMenuLocalizationParams = {
+      /** resource key */
+      key: string;
+      /** description */
+      description?: string;
+      /** translations (culture code -> value) */
+      translations: Record<string, string>;
+    };
   }
 }
