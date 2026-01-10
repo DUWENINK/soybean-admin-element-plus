@@ -6,7 +6,7 @@ import { useForm, useFormRules } from '@/hooks/common/form';
 import { $t } from '@/locales';
 import SvgIcon from '@/components/custom/svg-icon.vue';
 import IconSelector from './icon-selector.vue';
-import LocalizationEditor from './localization-editor.vue';
+import GenericLocalizationEditor from '@/components/common/generic-localization-editor.vue';
 
 defineOptions({ name: 'MenuOperateModal' });
 
@@ -312,9 +312,10 @@ watch(visible, () => {
     </template>
 
     <IconSelector v-model:visible="iconSelectorVisible" :current-icon="model.Icon" @select="handleIconSelect" />
-    <LocalizationEditor
+    <GenericLocalizationEditor
       v-model:visible="localizationEditorVisible"
       :resource-key="model.Name"
+      localization-type="Menu"
       @submitted="handleLocalizationSubmitted"
     />
   </ElDialog>

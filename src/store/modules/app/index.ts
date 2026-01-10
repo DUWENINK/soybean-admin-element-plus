@@ -7,6 +7,7 @@ import { localStg } from '@/utils/storage';
 import { SetupStoreId } from '@/enum';
 import { $t, setLocale } from '@/locales';
 import { setDayjsLocale } from '@/locales/dayjs';
+import { useSupportedLocales } from '@/hooks/common/locale';
 import { useRouteStore } from '../route';
 import { useTabStore } from '../tab';
 import { useThemeStore } from '../theme';
@@ -50,10 +51,38 @@ export const useAppStore = defineStore(SetupStoreId.App, () => {
 
   const locale = ref<App.I18n.LangType>(localStg.get('lang') || 'zh-CN');
 
-  const localeOptions: App.I18n.LangOption[] = [
-    { label: '中文', key: 'zh-CN' },
+  // 动态语言选项 - 从后端加载
+  const localeOptions = ref<App.I18n.LangOption[]>([
+    { label: '简体中文', key: 'zh-CN' },
     { label: 'English', key: 'en-US' }
-  ];
+  ]);
+
+  const localesLoading = ref(false);
+
+  /**
+   * 从后端加载支持的语言列表
+   */
+  async function loadSupportedLocales() {
+    const { loadSupportedCultures } = useSupportedLocales();
+    localesLoading.value = true;
+
+    try {
+      const result = await loadSupportedCultures();
+      if (result.localeOptions.length > 0) {
+        localeOptions.value = result.localeOptions;
+
+        // 如果当前语言不在支持的语言列表中,切换到默认语言
+        const currentLangSupported = result.localeOptions.some(opt => opt.key === locale.value);
+        if (!currentLangSupported) {
+          changeLocale(result.defaultLocale as App.I18n.LangType);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to load supported locales:', error);
+    } finally {
+      localesLoading.value = false;
+    }
+  }
 
   function changeLocale(lang: App.I18n.LangType) {
     locale.value = lang;
@@ -70,8 +99,10 @@ export const useAppStore = defineStore(SetupStoreId.App, () => {
     useTitle(documentTitle);
   }
 
-  function init() {
+  async function init() {
     setDayjsLocale(locale.value);
+    // 加载支持的语言列表
+    await loadSupportedLocales();
   }
 
   // watch store
@@ -142,7 +173,9 @@ export const useAppStore = defineStore(SetupStoreId.App, () => {
     fullContent,
     locale,
     localeOptions,
+    localesLoading,
     changeLocale,
+    loadSupportedLocales,
     themeDrawerVisible,
     openThemeDrawer,
     closeThemeDrawer,

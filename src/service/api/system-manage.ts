@@ -150,6 +150,42 @@ export function fetchClearLocalizationCache() {
   });
 }
 
+/** get supported cultures */
+export function fetchGetSupportedCultures() {
+  return request<Api.SystemManage.SupportedCulturesResponse>({
+    url: '/api/localization/cultures',
+    method: 'get'
+  });
+}
+
+/** get generic localization by key and type */
+export function fetchGetGenericLocalization(key: string, localizationType: Api.SystemManage.LocalizationType) {
+  return request<Api.SystemManage.GenericLocalization>({
+    url: '/api/Localization/GetByKey',
+    method: 'get',
+    params: { key, localizationType }
+  });
+}
+
+/** save generic localization */
+export function fetchSaveGenericLocalization(
+  data: Api.SystemManage.GenericSaveLocalizationParams,
+  localizationType: Api.SystemManage.LocalizationType
+) {
+  const endpoints: Record<Api.SystemManage.LocalizationType, string> = {
+    Menu: '/api/Localization/SaveMenuLocalization',
+    Role: '/api/Localization/SaveRoleLocalization',
+    Exception: '/api/Localization/SaveExceptionLocalization',
+    Enum: '/api/Localization/SaveEnumLocalization'
+  };
+
+  return request<{ id: string; key: string; message: string }>({
+    url: endpoints[localizationType],
+    method: 'post',
+    data
+  });
+}
+
 /** get action log list */
 export function fetchGetActionLogList(params?: Api.SystemManage.ActionLogSearchParams) {
   return request<Api.SystemManage.ActionLogList>({

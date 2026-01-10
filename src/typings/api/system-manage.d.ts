@@ -290,5 +290,44 @@ declare namespace Api {
       /** translations (culture code -> value) */
       translations: Record<string, string>;
     };
+
+    /** supported cultures response */
+    type SupportedCulturesResponse = {
+      /** default culture */
+      DefaultCulture: string;
+      /** supported cultures list */
+      SupportedCultures: string[];
+    };
+
+    /** localization type enum */
+    type LocalizationType = 'Menu' | 'Role' | 'Exception' | 'Enum';
+
+    /** generic localization data */
+    type GenericLocalization = {
+      /** resource id */
+      id: string;
+      /** resource key */
+      key: string;
+      /** resource type */
+      resourceType: string;
+      /** description */
+      description?: string;
+      /** whether system resource */
+      isSystem: boolean;
+      /** translations */
+      translations: MenuLocalizationTranslation[];
+    };
+
+    /** generic save localization params */
+    type GenericSaveLocalizationParams = {
+      /** resource key */
+      key: string;
+      /** description */
+      description?: string;
+      /** translations (culture code -> value) */
+      translations: Record<string, string>;
+      /** localization type */
+      localizationType?: LocalizationType;
+    };
   }
 }

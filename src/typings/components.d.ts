@@ -70,6 +70,7 @@ declare module 'vue' {
     ElWatermark: typeof import('element-plus/es')['ElWatermark']
     ExceptionBase: typeof import('./../components/common/exception-base.vue')['default']
     FullScreen: typeof import('./../components/common/full-screen.vue')['default']
+    GenericLocalizationEditor: typeof import('./../components/common/generic-localization-editor.vue')['default']
     GithubLink: typeof import('./../components/custom/github-link.vue')['default']
     'IconAntDesign:deleteOutlined': typeof import('~icons/ant-design/delete-outlined')['default']
     IconAntDesignEnterOutlined: typeof import('~icons/ant-design/enter-outlined')['default']

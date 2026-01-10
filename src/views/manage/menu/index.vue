@@ -13,9 +13,9 @@ import {
   fetchUpdateMenuOrder
 } from '@/service/api';
 import { $t } from '@/locales';
+import GenericLocalizationEditor from '@/components/common/generic-localization-editor.vue';
 import SvgIcon from '@/components/custom/svg-icon.vue';
 import MenuOperateModal, { type OperateType } from './modules/menu-operate-modal.vue';
-import LocalizationEditor from './modules/localization-editor.vue';
 
 defineOptions({ name: 'MenuManagement' });
 
@@ -627,9 +627,10 @@ function renderOperations(row: Api.SystemManage.Menu) {
         :all-pages="allPages"
         @submitted="handleSubmitted"
       />
-      <LocalizationEditor
+      <GenericLocalizationEditor
         v-model:visible="localizationEditorVisible"
         :resource-key="localizationResourceKey"
+        localization-type="Menu"
         @submitted="handleLocalizationSubmitted"
       />
     </ElCard>
