@@ -32,14 +32,14 @@ interface Translation {
 }
 
 const translations = ref<Translation[]>([
-  { culture: 'zh-CN', value: '', label: '简体中文' },
-  { culture: 'en-US', value: '', label: 'English' }
+  { culture: 'zh-CN', value: '', label: $t('page.manage.menu.localization.languageZhCN') },
+  { culture: 'en-US', value: '', label: $t('page.manage.menu.localization.languageEnUS') }
 ]);
 
 const description = ref('');
 
 // 标题
-const title = computed(() => `编辑菜单多语言 - ${props.resourceKey}`);
+const title = computed(() => `${$t('page.manage.menu.localization.editTitle')} - ${props.resourceKey}`);
 
 // 加载现有的翻译数据
 async function loadTranslations() {
@@ -84,7 +84,7 @@ async function handleSave() {
   // 验证至少有一个翻译不为空
   const hasTranslation = translations.value.some(t => t.value.trim() !== '');
   if (!hasTranslation) {
-    window.$message?.error('请至少填写一个语言的翻译');
+    window.$message?.error($t('page.manage.menu.localization.requireTranslation'));
     return;
   }
 
@@ -104,7 +104,7 @@ async function handleSave() {
     });
 
     if (!error) {
-      window.$message?.success('保存成功');
+      window.$message?.success($t('page.manage.menu.localization.saveSuccess'));
       closeModal();
       emit('submitted');
     }
@@ -130,26 +130,31 @@ watch(visible, val => {
     <ElSkeleton v-if="loading" :rows="5" animated />
     <div v-else>
       <ElForm label-position="right" :label-width="120">
-        <ElFormItem label="资源键">
+        <ElFormItem :label="$t('page.manage.menu.localization.resourceKey')">
           <ElInput :model-value="resourceKey" disabled />
         </ElFormItem>
 
-        <ElFormItem label="描述">
-          <ElInput v-model="description" type="textarea" :rows="2" placeholder="请输入描述信息（可选）" />
+        <ElFormItem :label="$t('page.manage.menu.localization.description')">
+          <ElInput
+            v-model="description"
+            type="textarea"
+            :rows="2"
+            :placeholder="$t('page.manage.menu.localization.descriptionPlaceholder')"
+          />
         </ElFormItem>
 
-        <ElDivider content-position="left">翻译内容</ElDivider>
+        <ElDivider content-position="left">{{ $t('page.manage.menu.localization.translationContent') }}</ElDivider>
 
         <ElFormItem v-for="translation in translations" :key="translation.culture" :label="translation.label">
           <ElInput
             v-model="translation.value"
-            :placeholder="`请输入${translation.label}翻译`"
+            :placeholder="$t('page.manage.menu.localization.translationPlaceholder', { lang: translation.label })"
             clearable
           />
         </ElFormItem>
 
         <ElAlert
-          title="提示"
+          :title="$t('page.manage.menu.localization.tipTitle')"
           type="info"
           :closable="false"
           show-icon
@@ -157,9 +162,9 @@ watch(visible, val => {
         >
           <template #default>
             <div class="text-12px">
-              <p>• 资源键用于在菜单中引用多语言文本</p>
-              <p>• 建议格式: Menu.模块名.菜单名 (例如: Menu.System.UserManagement)</p>
-              <p>• 至少需要填写一个语言的翻译</p>
+              <p>• {{ $t('page.manage.menu.localization.tipResourceKey') }}</p>
+              <p>• {{ $t('page.manage.menu.localization.tipFormat') }}</p>
+              <p>• {{ $t('page.manage.menu.localization.tipRequired') }}</p>
             </div>
           </template>
         </ElAlert>

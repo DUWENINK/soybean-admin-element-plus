@@ -507,7 +507,23 @@ const local: App.I18n.Schema = {
           tree: '树形视图'
         },
         dragSort: '拖拽排序',
-        refreshCache: '刷新缓存'
+        refreshCache: '刷新缓存',
+        localization: {
+          editTitle: '编辑菜单多语言',
+          resourceKey: '资源键',
+          description: '描述',
+          translationContent: '翻译内容',
+          descriptionPlaceholder: '请输入描述信息（可选）',
+          translationPlaceholder: '请输入{lang}翻译',
+          tipTitle: '提示',
+          tipResourceKey: '资源键用于在菜单中引用多语言文本',
+          tipFormat: '建议格式: Menu.模块名.菜单名 (例如: Menu.System.UserManagement)',
+          tipRequired: '至少需要填写一个语言的翻译',
+          languageZhCN: '简体中文',
+          languageEnUS: 'English',
+          saveSuccess: '保存成功',
+          requireTranslation: '请至少填写一个语言的翻译'
+        }
       },
       actionlog: {
         title: '操作日志',

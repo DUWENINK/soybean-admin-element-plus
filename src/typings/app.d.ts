@@ -689,6 +689,22 @@ declare namespace App {
             };
             dragSort: string;
             refreshCache: string;
+            localization: {
+              editTitle: string;
+              resourceKey: string;
+              description: string;
+              translationContent: string;
+              descriptionPlaceholder: string;
+              translationPlaceholder: string;
+              tipTitle: string;
+              tipResourceKey: string;
+              tipFormat: string;
+              tipRequired: string;
+              languageZhCN: string;
+              languageEnUS: string;
+              saveSuccess: string;
+              requireTranslation: string;
+            };
           };
         };
       };

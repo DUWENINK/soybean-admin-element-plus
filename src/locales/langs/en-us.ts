@@ -485,6 +485,22 @@ const local: App.I18n.Schema = {
         iconType: {
           iconify: 'Iconify Icon',
           local: 'Local Icon'
+        },
+        localization: {
+          editTitle: 'Edit Menu Localization',
+          resourceKey: 'Resource Key',
+          description: 'Description',
+          translationContent: 'Translation Content',
+          descriptionPlaceholder: 'Please enter description (optional)',
+          translationPlaceholder: 'Please enter {lang} translation',
+          tipTitle: 'Tip',
+          tipResourceKey: 'Resource key is used to reference multilingual text in menu',
+          tipFormat: 'Recommended format: Menu.ModuleName.MenuName (e.g., Menu.System.UserManagement)',
+          tipRequired: 'At least one language translation is required',
+          languageZhCN: 'Simplified Chinese',
+          languageEnUS: 'English',
+          saveSuccess: 'Save successfully',
+          requireTranslation: 'Please fill in at least one language translation'
         }
       }
     }
