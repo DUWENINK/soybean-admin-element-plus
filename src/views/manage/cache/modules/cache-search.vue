@@ -26,7 +26,7 @@ function search() {
 </script>
 
 <template>
-  <NCard :title="$t('common.search')" :bordered="false" size="small" class="card-wrapper">
+  <ElCard :title="$t('common.search')" :bordered="false" size="small" class="card-wrapper">
     <ElForm :model="model" label-width="80px">
       <ElRow :gutter="16">
         <ElCol :span="6">
@@ -63,7 +63,7 @@ function search() {
         </ElCol>
       </ElRow>
     </ElForm>
-  </NCard>
+  </ElCard>
 </template>
 
 <style scoped></style>

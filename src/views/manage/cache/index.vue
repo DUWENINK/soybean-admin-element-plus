@@ -188,7 +188,7 @@ onMounted(() => {
 <template>
   <div class="min-h-500px flex-col-stretch gap-16px overflow-hidden lt-sm:overflow-auto">
     <!-- 统计卡片 -->
-    <NCard :bordered="false" size="small" class="card-wrapper">
+    <ElCard :bordered="false" size="small" class="card-wrapper">
       <ElRow :gutter="20">
         <ElCol :span="6">
           <ElStatistic :title="$t('page.manage.cache.totalKeys')" :value="statistics.totalKeys" />
@@ -208,10 +208,10 @@ onMounted(() => {
           <ElStatistic :title="$t('page.manage.cache.totalSize')" :value="formatBytes(statistics.totalSizeInBytes)" />
         </ElCol>
       </ElRow>
-    </NCard>
+    </ElCard>
 
     <CacheSearch v-model:model="searchParams" @reset="handleReset" @search="getData" />
-    <NCard :title="$t('page.manage.cache.title')" :bordered="false" size="small" class="sm:flex-1-hidden card-wrapper">
+    <ElCard :title="$t('page.manage.cache.title')" :bordered="false" size="small" class="sm:flex-1-hidden card-wrapper">
       <template #header-extra>
         <TableHeaderOperation
           v-model:columns="columnChecks"
@@ -235,7 +235,7 @@ onMounted(() => {
         :row-data="openDrawer.editingData"
         @submitted="getData"
       />
-    </NCard>
+    </ElCard>
   </div>
 </template>
 

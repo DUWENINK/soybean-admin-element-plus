@@ -124,7 +124,7 @@ function handleReset() {
 <template>
   <div class="min-h-500px flex-col-stretch gap-16px overflow-hidden lt-sm:overflow-auto">
     <ActionLogSearch v-model:model="searchParams" @reset="handleReset" @search="getData" />
-    <NCard
+    <ElCard
       :title="$t('page.manage.actionlog.title')"
       :bordered="false"
       size="small"
@@ -153,7 +153,7 @@ function handleReset() {
         :loading="loading"
         :pagination="mobilePagination"
       />
-    </NCard>
+    </ElCard>
   </div>
 </template>
 
