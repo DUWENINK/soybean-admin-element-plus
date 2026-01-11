@@ -111,6 +111,7 @@ declare module 'vue' {
     'IconMingcute:zoomInLine': typeof import('~icons/mingcute/zoom-in-line')['default']
     'IconMingcute:zoomOutLine': typeof import('~icons/mingcute/zoom-out-line')['default']
     'IconSvgSpinners:180RingWithBg': typeof import('~icons/svg-spinners/180-ring-with-bg')['default']
+    IconSvgSpinners180RingWithBg: typeof import('~icons/svg-spinners/180-ring-with-bg')['default']
     IconUilSearch: typeof import('~icons/uil/search')['default']
     LangSwitch: typeof import('./../components/common/lang-switch.vue')['default']
     LocalizedMenuName: typeof import('./../components/common/localized-menu-name.vue')['default']

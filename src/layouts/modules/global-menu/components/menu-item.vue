@@ -11,17 +11,21 @@ const hasChildren = item.children && item.children.length > 0;
 <template>
   <ElSubMenu v-if="hasChildren" :index="item.key">
     <template #title>
-      <ElIcon>
+      <!-- <ElIcon>
         <component :is="item.icon" />
-      </ElIcon>
+      </ElIcon> -->
+          <SvgIcon :is="item.icon" />
+
       <span class="ib-ellipsis">{{ item.label }}</span>
     </template>
     <MenuItem v-for="child in item.children" :key="child.key" :item="child" :index="child.key"></MenuItem>
   </ElSubMenu>
   <ElMenuItem v-else>
-    <ElIcon>
+    <!-- <ElIcon>
       <component :is="item.icon" />
-    </ElIcon>
+    </ElIcon> -->
+              <SvgIcon :is="item.icon" />
+
     <span class="ib-ellipsis">{{ item.label }}</span>
   </ElMenuItem>
 </template>

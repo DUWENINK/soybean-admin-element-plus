@@ -479,12 +479,12 @@ function renderOperations(row: Api.SystemManage.Menu) {
 
           <!-- Empty state -->
           <div v-if="!loading && menuData.length === 0" class="empty-state">
-            <el-empty description="暂无菜单数据" />
+            <ElEmpty description="暂无菜单数据" />
           </div>
 
           <!-- Loading state -->
           <div v-if="loading" class="loading-spinner">
-            <icon-svg-spinners:180-ring-with-bg class="text-24px animate-spin" />
+            <IconSvgSpinners180RingWithBg class="text-24px animate-spin" />
             <span>加载中...</span>
           </div>
         </div>
