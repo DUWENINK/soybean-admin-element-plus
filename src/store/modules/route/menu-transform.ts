@@ -13,7 +13,7 @@ export function transformMenuToRoute(
   if (menu.MenuType === 'Api') {
     return null;
   }
-debugger
+
   // For Folder type menus, generate a path from the name if Resource is null
   const menuPath = menu.Resource || `/${getRouteNameFromPath(menu.Name || 'folder')}`;
 
@@ -25,8 +25,7 @@ debugger
     path: menuPath,
     component: getComponentPath(menu, hasLayoutParent),
     meta: {
-      title: menu.Name,
-      i18nKey: undefined,
+      title: menu.LocalizedName || menu.Name,
       icon: menu.Icon || 'mdi:menu',
       order: menu.Order,
       hide: !menu.Show,

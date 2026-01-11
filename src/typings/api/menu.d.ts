@@ -15,6 +15,7 @@ declare namespace Api {
     interface MenuTreeDto {
       Id: string; // 菜单ID
       Name: string; // 菜单名称
+      LocalizedName: string; // 本地化名称
       MenuType: MenuType; // 菜单类型
       Resource: string; // 资源路径（路由路径）
       Component: string; // 组件路径
