@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, shallowRef, watch } from 'vue';
-import { fetchGetAllPages, fetchGetMenuTree } from '@/service/api';
+import { fetchGetMenuTree } from '@/service/api';
+import { fetchGetUserMenus } from '@/service/api/menu';
+import { extractComponentsFromMenuTree } from '@/utils/menu';
 import { $t } from '@/locales';
 
 defineOptions({ name: 'MenuAuthModal' });
@@ -34,10 +36,10 @@ async function getHome() {
 const pages = shallowRef<string[]>([]);
 
 async function getPages() {
-  const { error, data } = await fetchGetAllPages();
+  const { error, data } = await fetchGetUserMenus();
 
-  if (!error) {
-    pages.value = data;
+  if (!error && data) {
+    pages.value = extractComponentsFromMenuTree(data);
   }
 }
 

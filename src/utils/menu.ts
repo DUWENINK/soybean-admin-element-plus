@@ -172,3 +172,29 @@ export function getMenuParents<T extends { id: number | string; parentId: number
 
   return parents;
 }
+
+/**
+ * Extract all unique component paths from menu tree
+ *
+ * @param menus - Menu tree data
+ * @returns Array of unique component paths, sorted alphabetically
+ */
+export function extractComponentsFromMenuTree(menus: Api.Menu.MenuTreeDto[]): string[] {
+  const components = new Set<string>();
+
+  function traverse(menuList: Api.Menu.MenuTreeDto[]) {
+    menuList.forEach(menu => {
+      // Only extract component from Page type menus
+      if (menu.MenuType === 'Page' && menu.Component) {
+        components.add(menu.Component);
+      }
+      // Recursively traverse children
+      if (menu.Children && menu.Children.length > 0) {
+        traverse(menu.Children);
+      }
+    });
+  }
+
+  traverse(menus);
+  return Array.from(components).sort();
+}

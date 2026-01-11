@@ -84,10 +84,13 @@ export const useAppStore = defineStore(SetupStoreId.App, () => {
     }
   }
 
-  function changeLocale(lang: App.I18n.LangType) {
+  async function changeLocale(lang: App.I18n.LangType) {
     locale.value = lang;
     setLocale(lang);
     localStg.set('lang', lang);
+
+    // 重新从后端加载本地化后的菜单
+    await routeStore.reloadMenusFromBackend();
   }
 
   /** Update document title by locale */
@@ -141,9 +144,6 @@ export const useAppStore = defineStore(SetupStoreId.App, () => {
     watch(locale, () => {
       // update document title by locale
       updateDocumentTitleByLocale();
-
-      // update global menus by locale
-      routeStore.updateGlobalMenusByLocale();
 
       // update tabs by locale
       tabStore.updateTabsByLocale();

@@ -277,7 +277,7 @@ declare namespace Api {
       description?: string;
       /** whether system resource */
       isSystem: boolean;
-      /** translations */
+      /** translations array */
       translations: MenuLocalizationTranslation[];
     };
 
@@ -314,7 +314,7 @@ declare namespace Api {
       description?: string;
       /** whether system resource */
       isSystem: boolean;
-      /** translations */
+      /** translations array */
       translations: MenuLocalizationTranslation[];
     };
 

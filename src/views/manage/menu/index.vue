@@ -7,11 +7,12 @@ import { menuTypeRecord } from '@/constants/business';
 import {
   fetchBatchDeleteMenus,
   fetchDeleteMenu,
-  fetchGetAllPages,
   fetchGetMenuTree,
   fetchUpdateMenu,
   fetchUpdateMenuOrder
 } from '@/service/api';
+import { fetchGetUserMenus } from '@/service/api/menu';
+import { extractComponentsFromMenuTree } from '@/utils/menu';
 import { $t } from '@/locales';
 import GenericLocalizationEditor from '@/components/common/generic-localization-editor.vue';
 import SvgIcon from '@/components/custom/svg-icon.vue';
@@ -200,8 +201,10 @@ function handleLocalizationSubmitted() {
 const allPages = ref<string[]>([]);
 
 async function getAllPages() {
-  const { data: pages } = await fetchGetAllPages();
-  allPages.value = pages || [];
+  const { data: userMenus } = await fetchGetUserMenus();
+  if (userMenus) {
+    allPages.value = extractComponentsFromMenuTree(userMenus);
+  }
 }
 
 async function handleSubmitted() {

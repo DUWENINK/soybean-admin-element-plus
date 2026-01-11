@@ -38,14 +38,6 @@ export function fetchGetMenuList() {
   });
 }
 
-/** get all pages */
-export function fetchGetAllPages() {
-  return request<string[]>({
-    url: '/systemManage/getAllPages',
-    method: 'get'
-  });
-}
-
 /** get menu tree */
 export function fetchGetMenuTree() {
   return request<Api.SystemManage.Menu[]>({

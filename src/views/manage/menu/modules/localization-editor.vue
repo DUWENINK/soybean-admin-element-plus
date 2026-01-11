@@ -49,14 +49,21 @@ async function loadTranslations() {
   try {
     const { data, error } = await fetchGetMenuLocalization(props.resourceKey);
     if (!error && data) {
-      description.value = data.description || '';
+      // 后端字段可能是大写（PascalCase）或小写（camelCase）
+      const desc = (data as any).Description || (data as any).description || '';
+      description.value = desc;
 
-      // 更新翻译值
-      if (data.translations && Array.isArray(data.translations)) {
-        data.translations.forEach((t: any) => {
-          const translation = translations.value.find(tr => tr.culture === t.culture);
+      // 更新翻译值 - 后端返回数组格式: [{ culture: "zh-CN", value: "首页" }, ...]
+      // 兼容大写 Translations 和小写 translations
+      const trans = (data as any).Translations || (data as any).translations;
+      if (trans && Array.isArray(trans)) {
+        trans.forEach((t: any) => {
+          // 兼容大写 Culture/Value 和小写 culture/value
+          const cultureName = t.Culture || t.culture;
+          const translationValue = t.Value || t.value;
+          const translation = translations.value.find(tr => tr.culture === cultureName);
           if (translation) {
-            translation.value = t.value || '';
+            translation.value = translationValue || '';
           }
         });
       }

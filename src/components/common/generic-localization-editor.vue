@@ -116,27 +116,34 @@ async function loadSupportedCultures() {
 async function loadTranslations() {
   if (!props.resourceKey) return;
 
+  // 先清空所有翻译值
+  translations.value.forEach(t => {
+    t.value = '';
+  });
+  description.value = '';
+
   loading.value = true;
   try {
     const { data, error } = await fetchGetGenericLocalization(props.resourceKey, props.localizationType);
     if (!error && data) {
-      description.value = data.description || '';
+      // 后端字段可能是大写（PascalCase）或小写（camelCase）
+      const desc = (data as any).Description || (data as any).description || '';
+      description.value = desc;
 
-      // 更新翻译值
-      if (data.translations && Array.isArray(data.translations)) {
-        data.translations.forEach((t: any) => {
-          const translation = translations.value.find(tr => tr.culture === t.culture);
+      // 更新翻译值 - 后端返回数组格式: [{ culture: "zh-CN", value: "首页" }, ...]
+      // 兼容大写 Translations 和小写 translations
+      const trans = (data as any).Translations || (data as any).translations;
+      if (trans && Array.isArray(trans)) {
+        trans.forEach((t: any) => {
+          // 兼容大写 Culture/Value 和小写 culture/value
+          const cultureName = t.Culture || t.culture;
+          const translationValue = t.Value || t.value;
+          const translation = translations.value.find(tr => tr.culture === cultureName);
           if (translation) {
-            translation.value = t.value || '';
+            translation.value = translationValue || '';
           }
         });
       }
-    } else {
-      // 如果资源不存在,清空翻译值
-      translations.value.forEach(t => {
-        t.value = '';
-      });
-      description.value = '';
     }
   } finally {
     loading.value = false;
@@ -234,24 +241,14 @@ const resourceKeyHint = computed(() => {
           :label="translation.label"
           :class="{ 'is-default-culture': translation.culture === defaultCulture }"
         >
-          <ElInput
-            v-model="translation.value"
-            :placeholder="`请输入${translation.label}翻译`"
-            clearable
-          >
+          <ElInput v-model="translation.value" :placeholder="`请输入${translation.label}翻译`" clearable>
             <template v-if="translation.culture === defaultCulture" #prepend>
               <ElTag type="primary" size="small">默认</ElTag>
             </template>
           </ElInput>
         </ElFormItem>
 
-        <ElAlert
-          title="提示"
-          type="info"
-          :closable="false"
-          show-icon
-          class="mb-16px"
-        >
+        <ElAlert title="提示" type="info" :closable="false" show-icon class="mb-16px">
           <template #default>
             <div class="text-12px">
               <p>• 资源键用于在系统中引用多语言文本</p>

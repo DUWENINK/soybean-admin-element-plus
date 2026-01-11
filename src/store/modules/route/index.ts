@@ -98,6 +98,28 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
     menus.value = updateLocaleOfGlobalMenus(menus.value);
   }
 
+  /** Reload menus from backend (for language switching) */
+  async function reloadMenusFromBackend() {
+    if (authRouteMode.value === 'static') {
+      // Static mode doesn't need to reload from backend
+      updateGlobalMenusByLocale();
+      return;
+    }
+
+    // Reload menus from backend for dynamic mode
+    const { data: menuData, error: menuError } = await fetchGetUserMenus();
+
+    if (!menuError && menuData) {
+      // Transform menus to routes
+      const routes = transformMenusToRoutes(menuData);
+
+      if (routes.length > 0) {
+        addAuthRoutes(routes);
+        handleConstantAndAuthRoutes();
+      }
+    }
+  }
+
   /** Cache routes */
   const cacheRoutes = ref<RouteKey[]>([]);
 
@@ -361,6 +383,7 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
     menus,
     searchMenus,
     updateGlobalMenusByLocale,
+    reloadMenusFromBackend,
     cacheRoutes,
     excludeCacheRoutes,
     resetRouteCache,
