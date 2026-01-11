@@ -110,6 +110,8 @@ declare namespace Api {
       Id: string;
       /** menu name */
       Name: string;
+      /** localized menu name */
+      LocalizedName?: string;
       /** menu type */
       MenuType: MenuType;
       /** resource path */

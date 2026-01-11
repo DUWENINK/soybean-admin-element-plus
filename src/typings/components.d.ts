@@ -113,6 +113,7 @@ declare module 'vue' {
     'IconSvgSpinners:180RingWithBg': typeof import('~icons/svg-spinners/180-ring-with-bg')['default']
     IconUilSearch: typeof import('~icons/uil/search')['default']
     LangSwitch: typeof import('./../components/common/lang-switch.vue')['default']
+    LocalizedMenuName: typeof import('./../components/common/localized-menu-name.vue')['default']
     LookForward: typeof import('./../components/custom/look-forward.vue')['default']
     MenuToggler: typeof import('./../components/common/menu-toggler.vue')['default']
     PinToggler: typeof import('./../components/common/pin-toggler.vue')['default']

@@ -15,6 +15,7 @@ import { fetchGetUserMenus } from '@/service/api/menu';
 import { extractComponentsFromMenuTree } from '@/utils/menu';
 import { $t } from '@/locales';
 import GenericLocalizationEditor from '@/components/common/generic-localization-editor.vue';
+import LocalizedMenuName from '@/components/common/localized-menu-name.vue';
 import SvgIcon from '@/components/custom/svg-icon.vue';
 import MenuOperateModal, { type OperateType } from './modules/menu-operate-modal.vue';
 
@@ -322,7 +323,7 @@ function renderIcon(row: Api.SystemManage.Menu) {
 
 // Render menu name
 function renderMenuName(row: Api.SystemManage.Menu) {
-  return <span>{row.Name}</span>;
+  return <LocalizedMenuName menuKey={row.Name} localizedName={row.LocalizedName} />;
 }
 
 // Render status
@@ -447,7 +448,9 @@ function renderOperations(row: Api.SystemManage.Menu) {
 
                   <!-- Menu info -->
                   <div class="menu-info">
-                    <div class="menu-name" :class="{ 'opacity-50': !data.Show }">{{ data.Name }}</div>
+                    <div class="menu-name" :class="{ 'opacity-50': !data.Show }">
+                      <LocalizedMenuName :menu-key="data.Name" :localized-name="data.LocalizedName" />
+                    </div>
                     <div v-if="data.Resource" class="menu-resource">{{ data.Resource }}</div>
                   </div>
 
@@ -587,6 +590,8 @@ function renderOperations(row: Api.SystemManage.Menu) {
           border
           :data="menuData"
           row-key="Id"
+          :tree-props="{ children: 'Children', hasChildren: 'hasChildren' }"
+          :default-expand-all="false"
           @selection-change="checkedRowKeys = $event.map(item => item.Id)"
         >
           <ElTableColumn type="selection" width="48" />
