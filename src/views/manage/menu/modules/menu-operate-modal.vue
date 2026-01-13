@@ -47,38 +47,37 @@ const title = computed(() => {
 
 // Use old project's data model directly (PascalCase)
 type Model = {
-  Id?: string;
-  Name: string;
-  MenuType: Api.SystemManage.MenuType;
-  Resource: string;
-  Component: string;
-  ParentId?: string;
-  Icon: string;
-  Order: number;
-  Show: boolean;
-  PermissionCode: string;
+  id?: string;
+  name: string;
+  menuType: Api.SystemManage.MenuType;
+  resource: string;
+  component: string;
+  parentId?: string;
+  icon: string;
+  order: number;
+  show: boolean;
+  permissionCode: string;
 };
 
 const model = ref(createDefaultModel());
 
 function createDefaultModel(): Model {
   return {
-    Name: '',
-    MenuType: 'Folder',
-    Resource: '',
-    Component: '',
-    ParentId: undefined,
-    Icon: 'mdi:menu',
-    Order: 0,
-    Show: true,
-    PermissionCode: ''
+    name: '',
+    menuType: 'Folder',
+    resource: '',
+    component: '',
+    parentId: undefined,
+    icon: 'mdi:menu',
+    order: 0,
+    show: true,
+    permissionCode: ''
   };
 }
 
-type RuleKey = Extract<keyof Model, 'Name'>;
-
+type RuleKey = Extract<keyof Model, 'name'>;
 const rules: Record<RuleKey, App.Global.FormRule> = {
-  Name: defaultRequiredRule
+  name: defaultRequiredRule
 };
 
 const disabledMenuType = computed(() => props.operateType === 'edit');
@@ -87,14 +86,14 @@ const disabledMenuType = computed(() => props.operateType === 'edit');
 const iconSelectorVisible = ref(false);
 
 function handleIconSelect(iconName: string) {
-  model.value.Icon = iconName;
+  model.value.icon = iconName;
 }
 
 // Localization editor
 const localizationEditorVisible = ref(false);
 
 function openLocalizationEditor() {
-  if (!model.value.Name) {
+  if (!model.value.name) {
     window.$message?.warning('请先输入菜单名称Key');
     return;
   }
@@ -106,20 +105,20 @@ function handleLocalizationSubmitted() {
 }
 
 // Show component field for Page menu type
-const showComponent = computed(() => model.value.MenuType === 'Page');
+const showComponent = computed(() => model.value.menuType === 'Page');
 
 // Show resource field for Folder, Page and External menu types (not Api)
-const showResource = computed(() => model.value.MenuType !== 'Api');
+const showResource = computed(() => model.value.menuType !== 'Api');
 
 const resourceLabel = computed(() => {
-  if (model.value.MenuType === 'Page') return $t('page.manage.menu.routePath');
-  if (model.value.MenuType === 'External') return $t('page.manage.menu.href');
+  if (model.value.menuType === 'Page') return $t('page.manage.menu.routePath');
+  if (model.value.menuType === 'External') return $t('page.manage.menu.href');
   return $t('page.manage.menu.routePath');
 });
 
 const resourcePlaceholder = computed(() => {
-  if (model.value.MenuType === 'External') return 'https://example.com';
-  if (model.value.MenuType === 'Folder') return '/system';
+  if (model.value.menuType === 'External') return 'https://example.com';
+  if (model.value.menuType === 'Folder') return '/system';
   return '/user/list';
 });
 
@@ -136,23 +135,23 @@ function handleInitModel() {
   if (!props.rowData) return;
 
   if (props.operateType === 'addChild') {
-    const { Id } = props.rowData;
-    model.value.ParentId = Id;
+    const { id } = props.rowData;
+    model.value.parentId = id;
   }
 
   if (props.operateType === 'edit') {
     // Copy all fields from old project's data structure
     model.value = {
-      Id: props.rowData.Id,
-      Name: props.rowData.Name,
-      MenuType: props.rowData.MenuType,
-      Resource: props.rowData.Resource || '',
-      Component: props.rowData.Component || '',
-      ParentId: props.rowData.ParentId,
-      Icon: props.rowData.Icon || 'mdi:menu',
-      Order: props.rowData.Order,
-      Show: props.rowData.Show,
-      PermissionCode: props.rowData.PermissionCode || ''
+      id: props.rowData.id,
+      name: props.rowData.name,
+      menuType: props.rowData.menuType,
+      resource: props.rowData.resource || '',
+      component: props.rowData.component || '',
+      parentId: props.rowData.parentId,
+      icon: props.rowData.icon || 'mdi:menu',
+      order: props.rowData.order,
+      show: props.rowData.show,
+      permissionCode: props.rowData.permissionCode || ''
     };
   }
 }
@@ -162,29 +161,29 @@ function closeModal() {
 }
 
 function validateModel(): boolean {
-  const { Name, MenuType, Resource, Component, PermissionCode } = model.value;
+  const { name, menuType, resource, component, permissionCode } = model.value;
 
   // Name is always required
-  if (!Name?.trim()) {
+  if (!name?.trim()) {
     window.$message?.error($t('page.manage.menu.form.menuName'));
     return false;
   }
 
   // Validate Resource for Folder, Page, External
-  if ((MenuType === 'Folder' || MenuType === 'Page' || MenuType === 'External') && !Resource?.trim()) {
-    const msg = MenuType === 'External' ? $t('page.manage.menu.form.href') : $t('page.manage.menu.form.routePath');
+  if ((menuType === 'Folder' || menuType === 'Page' || menuType === 'External') && !resource?.trim()) {
+    const msg = menuType === 'External' ? $t('page.manage.menu.form.href') : $t('page.manage.menu.form.routePath');
     window.$message?.error(msg);
     return false;
   }
 
   // Validate Component for Page
-  if (MenuType === 'Page' && !Component?.trim()) {
+  if (menuType === 'Page' && !component?.trim()) {
     window.$message?.error($t('page.manage.menu.form.page'));
     return false;
   }
 
   // Validate PermissionCode for Api
-  if (MenuType === 'Api' && !PermissionCode?.trim()) {
+  if (menuType === 'Api' && !permissionCode?.trim()) {
     window.$message?.error('请输入权限标识');
     return false;
   }
@@ -228,14 +227,9 @@ watch(visible, () => {
       <ElForm ref="formRef" :model="model" :rules="rules" label-position="right" :label-width="120">
         <ElRow :gutter="16">
           <ElCol :span="24">
-            <ElFormItem :label="$t('page.manage.menu.menuType')" prop="MenuType">
-              <ElRadioGroup v-model="model.MenuType" :disabled="disabledMenuType">
-                <ElRadio
-                  v-for="item in menuTypeOptions"
-                  :key="item.value"
-                  :value="item.value"
-                  :label="item.value"
-                >
+            <ElFormItem :label="$t('page.manage.menu.menuType')" prop="menuType">
+              <ElRadioGroup v-model="model.menuType" :disabled="disabledMenuType">
+                <ElRadio v-for="item in menuTypeOptions" :key="item.value" :value="item.value" :label="item.value">
                   {{ $t(item.label) }}
                 </ElRadio>
               </ElRadioGroup>
@@ -243,8 +237,8 @@ watch(visible, () => {
           </ElCol>
 
           <ElCol :span="24">
-            <ElFormItem :label="$t('page.manage.menu.menuName')" prop="Name">
-              <ElInput v-model="model.Name" :placeholder="$t('page.manage.menu.form.menuName')">
+            <ElFormItem :label="$t('page.manage.menu.menuName')" prop="name">
+              <ElInput v-model="model.name" :placeholder="$t('page.manage.menu.form.menuName')">
                 <template #append>
                   <ElButton @click="openLocalizationEditor">
                     <icon-mdi:translate class="text-icon" />
@@ -255,24 +249,24 @@ watch(visible, () => {
           </ElCol>
 
           <ElCol v-if="showResource" :span="24">
-            <ElFormItem :label="resourceLabel" prop="Resource">
-              <ElInput v-model="model.Resource" :placeholder="resourcePlaceholder" />
+            <ElFormItem :label="resourceLabel" prop="resource">
+              <ElInput v-model="model.resource" :placeholder="resourcePlaceholder" />
             </ElFormItem>
           </ElCol>
 
           <ElCol v-if="showComponent" :span="24">
-            <ElFormItem :label="$t('page.manage.menu.component')" prop="Component">
-              <ElSelect v-model="model.Component" clearable filterable :placeholder="$t('page.manage.menu.form.page')">
+            <ElFormItem :label="$t('page.manage.menu.component')" prop="component">
+              <ElSelect v-model="model.component" clearable filterable :placeholder="$t('page.manage.menu.form.page')">
                 <ElOption v-for="{ label, value } in pageOptions" :key="value" :label="label" :value="value" />
               </ElSelect>
             </ElFormItem>
           </ElCol>
 
           <ElCol :span="24">
-            <ElFormItem :label="$t('page.manage.menu.icon')" prop="Icon">
-              <ElInput v-model="model.Icon" :placeholder="$t('page.manage.menu.form.icon')">
+            <ElFormItem :label="$t('page.manage.menu.icon')" prop="icon">
+              <ElInput v-model="model.icon" :placeholder="$t('page.manage.menu.form.icon')">
                 <template #suffix>
-                  <SvgIcon v-if="model.Icon" :icon="model.Icon" class="text-icon" />
+                  <SvgIcon v-if="model.icon" :icon="model.icon" class="text-icon" />
                 </template>
                 <template #append>
                   <ElButton @click="iconSelectorVisible = true">
@@ -284,20 +278,20 @@ watch(visible, () => {
           </ElCol>
 
           <ElCol :span="12">
-            <ElFormItem :label="$t('page.manage.menu.order')" prop="Order">
-              <ElInputNumber v-model="model.Order" class="w-full" :placeholder="$t('page.manage.menu.form.order')" />
+            <ElFormItem :label="$t('page.manage.menu.order')" prop="order">
+              <ElInputNumber v-model="model.order" class="w-full" :placeholder="$t('page.manage.menu.form.order')" />
             </ElFormItem>
           </ElCol>
 
           <ElCol :span="12">
-            <ElFormItem :label="$t('page.manage.menu.show')" prop="Show">
-              <ElSwitch v-model="model.Show" />
+            <ElFormItem :label="$t('page.manage.menu.show')" prop="show">
+              <ElSwitch v-model="model.show" />
             </ElFormItem>
           </ElCol>
 
-          <ElCol v-if="model.MenuType !== 'Folder'" :span="24">
-            <ElFormItem :label="$t('page.manage.menu.permissionCode')" prop="PermissionCode">
-              <ElInput v-model="model.PermissionCode" placeholder="sys:user:add" />
+          <ElCol v-if="model.menuType !== 'Folder'" :span="24">
+            <ElFormItem :label="$t('page.manage.menu.permissionCode')" prop="permissionCode">
+              <ElInput v-model="model.permissionCode" placeholder="sys:user:add" />
             </ElFormItem>
           </ElCol>
         </ElRow>
@@ -311,10 +305,10 @@ watch(visible, () => {
       </ElSpace>
     </template>
 
-    <IconSelector v-model:visible="iconSelectorVisible" :current-icon="model.Icon" @select="handleIconSelect" />
+    <IconSelector v-model:visible="iconSelectorVisible" :current-icon="model.icon" @select="handleIconSelect" />
     <GenericLocalizationEditor
       v-model:visible="localizationEditorVisible"
-      :resource-key="model.Name"
+      :resource-key="model.name"
       localization-type="Menu"
       @submitted="handleLocalizationSubmitted"
     />

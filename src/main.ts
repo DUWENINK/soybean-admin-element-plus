@@ -12,6 +12,7 @@ import { setupStore } from './store';
 import { setupRouter } from './router';
 import { setupI18n } from './locales';
 import App from './App.vue';
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 
 // Add passive event listeners to improve scroll performance
 if (typeof window !== 'undefined') {
@@ -64,7 +65,9 @@ async function setupApp() {
   setupDayjs();
 
   const app = createApp(App);
-
+  for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+    app.component(key, component);
+  }
   setupUI(app);
 
   setupStore(app);

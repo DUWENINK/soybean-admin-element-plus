@@ -187,11 +187,11 @@ const localizationEditorVisible = ref(false);
 const localizationResourceKey = ref('');
 
 function openLocalizationEditor() {
-  if (!selectedMenu.value?.Name) {
+  if (!selectedMenu.value?.name) {
     window.$message?.warning('请先输入菜单名称Key');
     return;
   }
-  localizationResourceKey.value = selectedMenu.value.Name;
+  localizationResourceKey.value = selectedMenu.value.name;
   localizationEditorVisible.value = true;
 }
 
@@ -211,8 +211,8 @@ async function getAllPages() {
 async function handleSubmitted() {
   await loadMenuTree();
   // Refresh selected menu if it was being edited
-  if (selectedMenu.value?.Id) {
-    const updatedMenu = findMenuInTree(menuData.value, selectedMenu.value.Id);
+  if (selectedMenu.value?.id) {
+    const updatedMenu = findMenuInTree(menuData.value, selectedMenu.value.id);
     if (updatedMenu) {
       selectedMenu.value = { ...updatedMenu };
     }
