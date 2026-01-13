@@ -40,8 +40,8 @@ const selectedMenu = ref<Api.SystemManage.Menu | null>(null);
 
 // Tree props
 const treeProps = {
-  children: 'Children',
-  label: 'Name'
+  children: 'children',
+  label: 'name'
 };
 
 const menuTypeOptions: { value: Api.SystemManage.MenuType; label: string }[] = Object.entries(menuTypeRecord).map(
@@ -52,7 +52,7 @@ const menuTypeOptions: { value: Api.SystemManage.MenuType; label: string }[] = O
 );
 
 // Default expanded keys (first level only)
-const expandedKeys = computed(() => menuData.value.map(node => node.Id));
+const expandedKeys = computed(() => menuData.value.map(node => node.id));
 
 // Watch filter text
 watch(filterText, val => {
@@ -62,13 +62,13 @@ watch(filterText, val => {
 // Filter node method
 function filterNode(value: string, data: Api.SystemManage.Menu) {
   if (!value) return true;
-  return data.Name.toLowerCase().includes(value.toLowerCase());
+  return data.name.toLowerCase().includes(value.toLowerCase());
 }
 
 // Allow drop for drag and drop
 function allowDrop(draggingNode: any, dropNode: any, type: 'prev' | 'next' | 'inner') {
   // Only Folder and Page can have children
-  if (type === 'inner' && dropNode.data.MenuType !== 'Folder' && dropNode.data.MenuType !== 'Page') {
+  if (type === 'inner' && dropNode.data.menuType !== 'Folder' && dropNode.data.menuType !== 'Page') {
     return false;
   }
   return true;
@@ -76,8 +76,8 @@ function allowDrop(draggingNode: any, dropNode: any, type: 'prev' | 'next' | 'in
 
 // Handle node drop
 async function handleNodeDrop(draggingNode: any, dropNode: any, dropType: 'before' | 'after' | 'inner') {
-  const dragKey = draggingNode.data.Id;
-  const dropKey = dropNode.data.Id;
+  const dragKey = draggingNode.data.id;
+  const dropKey = dropNode.data.id;
 
   // Convert dropType to old project format
   let moveType: Api.SystemManage.MenuMoveType;
@@ -222,9 +222,9 @@ async function handleSubmitted() {
 // Helper function to find menu in tree
 function findMenuInTree(menus: Api.SystemManage.Menu[], id: string): Api.SystemManage.Menu | null {
   for (const menu of menus) {
-    if (menu.Id === id) return menu;
-    if (menu.Children) {
-      const found = findMenuInTree(menu.Children, id);
+    if (menu.id === id) return menu;
+    if (menu.children) {
+      const found = findMenuInTree(menu.children, id);
       if (found) return found;
     }
   }
@@ -235,29 +235,29 @@ function findMenuInTree(menus: Api.SystemManage.Menu[], id: string): Api.SystemM
 function validateSelectedMenu(): boolean {
   if (!selectedMenu.value) return false;
 
-  const { Name, MenuType, Resource, Component, PermissionCode } = selectedMenu.value;
+  const { name, menuType, resource, component, permissionCode } = selectedMenu.value;
 
   // Name is always required
-  if (!Name?.trim()) {
+  if (!name?.trim()) {
     window.$message?.error($t('page.manage.menu.form.menuName'));
     return false;
   }
 
   // Validate Resource for Folder, Page, External
-  if ((MenuType === 'Folder' || MenuType === 'Page' || MenuType === 'External') && !Resource?.trim()) {
-    const msg = MenuType === 'External' ? $t('page.manage.menu.form.href') : $t('page.manage.menu.form.routePath');
+  if ((menuType === 'Folder' || menuType === 'Page' || menuType === 'External') && !resource?.trim()) {
+    const msg = menuType === 'External' ? $t('page.manage.menu.form.href') : $t('page.manage.menu.form.routePath');
     window.$message?.error(msg);
     return false;
   }
 
   // Validate Component for Page
-  if (MenuType === 'Page' && !Component?.trim()) {
+  if (menuType === 'Page' && !component?.trim()) {
     window.$message?.error($t('page.manage.menu.form.page'));
     return false;
   }
 
   // Validate PermissionCode for Api
-  if (MenuType === 'Api' && !PermissionCode?.trim()) {
+  if (menuType === 'Api' && !permissionCode?.trim()) {
     window.$message?.error('请输入权限标识');
     return false;
   }
@@ -427,7 +427,7 @@ function renderOperations(row: Api.SystemManage.Menu) {
               ref="treeRef"
               :data="menuData"
               :props="treeProps"
-              node-key="Id"
+              node-key="id"
               draggable
               highlight-current
               :expand-on-click-node="false"
@@ -438,7 +438,7 @@ function renderOperations(row: Api.SystemManage.Menu) {
               @node-drop="handleNodeDrop"
             >
               <template #default="{ node, data }">
-                <div class="custom-tree-node" @mouseenter="hoveredNodeId = data.Id" @mouseleave="hoveredNodeId = null">
+                <div class="custom-tree-node" @mouseenter="hoveredNodeId = data.id" @mouseleave="hoveredNodeId = null">
                   <!-- Icon -->
                   <SvgIcon :icon="data.Icon" class="tree-icon text-icon" :class="{ 'opacity-50': !data.Show }" />
 
@@ -451,12 +451,12 @@ function renderOperations(row: Api.SystemManage.Menu) {
                   </div>
 
                   <!-- Action buttons (show on hover) -->
-                  <div class="menu-actions" :class="{ 'is-visible': hoveredNodeId === data.Id }">
+                  <div class="menu-actions" :class="{ 'is-visible': hoveredNodeId === data.id }">
                     <ElButton
                       icon="Plus"
                       size="small"
                       circle
-                      :disabled="data.MenuType === 'External' || data.MenuType === 'Api'"
+                      :disabled="data.menuType === 'External' || data.menuType === 'Api'"
                       @click.stop="handleAddChildMenu(data)"
                     />
                     <ElButton
@@ -464,8 +464,8 @@ function renderOperations(row: Api.SystemManage.Menu) {
                       type="danger"
                       size="small"
                       circle
-                      :disabled="data.Children && data.Children.length > 0"
-                      @click.stop="handleDelete(data.Id)"
+                      :disabled="data.children && data.children.length > 0"
+                      @click.stop="handleDelete(data.id)"
                     />
                   </div>
                 </div>
@@ -609,15 +609,15 @@ function renderOperations(row: Api.SystemManage.Menu) {
               <component :is="renderIcon(row)" />
             </template>
           </ElTableColumn>
-          <ElTableColumn prop="Resource" :label="$t('page.manage.menu.resource')" min-width="150" />
-          <ElTableColumn prop="Component" :label="$t('page.manage.menu.component')" min-width="150" />
-          <ElTableColumn prop="PermissionCode" :label="$t('page.manage.menu.permissionCode')" width="150" />
+          <ElTableColumn prop="resource" :label="$t('page.manage.menu.resource')" min-width="150" />
+          <ElTableColumn prop="component" :label="$t('page.manage.menu.component')" min-width="150" />
+          <ElTableColumn prop="permissionCode" :label="$t('page.manage.menu.permissionCode')" width="150" />
           <ElTableColumn :label="$t('page.manage.menu.show')" width="100">
             <template #default="{ row }">
               <component :is="renderStatus(row)" />
             </template>
           </ElTableColumn>
-          <ElTableColumn prop="Order" :label="$t('page.manage.menu.order')" width="80" />
+          <ElTableColumn prop="order" :label="$t('page.manage.menu.order')" width="80" />
           <ElTableColumn :label="$t('common.operate')" width="280" fixed="right">
             <template #default="{ row }">
               <component :is="renderOperations(row)" />

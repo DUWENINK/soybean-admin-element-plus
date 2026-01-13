@@ -306,9 +306,9 @@ declare namespace Api {
     /** supported cultures response */
     type SupportedCulturesResponse = {
       /** default culture */
-      DefaultCulture: string;
+      defaultCulture: string;
       /** supported cultures list */
-      SupportedCultures: string[];
+      supportedCultures: string[];
     };
 
     /** localization type enum */

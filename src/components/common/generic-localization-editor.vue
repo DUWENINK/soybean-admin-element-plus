@@ -83,8 +83,8 @@ async function loadSupportedCultures() {
   try {
     const { data, error } = await fetchGetSupportedCultures();
     if (!error && data) {
-      supportedCultures.value = data.SupportedCultures || [];
-      defaultCulture.value = data.DefaultCulture || 'zh-CN';
+      supportedCultures.value = data.supportedCultures || [];
+      defaultCulture.value = data.defaultCulture || 'zh-CN';
 
       // 初始化翻译数组
       translations.value = supportedCultures.value.map(culture => ({
@@ -234,7 +234,6 @@ const resourceKeyHint = computed(() => {
             <span>翻译内容</span>
           </div>
         </ElDivider>
-
         <ElFormItem
           v-for="translation in translations"
           :key="translation.culture"

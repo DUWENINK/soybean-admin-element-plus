@@ -4,7 +4,7 @@ import { request } from '../request';
  * Get user menus
  */
 export function fetchGetUserMenus() {
-  return request<Api.Menu.MenuTreeDto[]>({
+  return request<Api.SystemManage.Menu[]>({
     url: '/api/Account/Menu',
     method: 'post'
   });
@@ -14,7 +14,7 @@ export function fetchGetUserMenus() {
  * Search menus (for menu management)
  */
 export function fetchSearchMenus() {
-  return request<Api.Menu.MenuTreeDto[]>({
+  return request<Api.SystemManage.Menu[]>({
     url: '/api/_Menu/Search',
     method: 'post'
   });

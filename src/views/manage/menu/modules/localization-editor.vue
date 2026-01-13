@@ -50,23 +50,22 @@ async function loadTranslations() {
     const { data, error } = await fetchGetMenuLocalization(props.resourceKey);
     if (!error && data) {
       // 后端字段可能是大写（PascalCase）或小写（camelCase）
-      const desc = (data as any).Description || (data as any).description || '';
+      const desc = data.description || '';
       description.value = desc;
 
       // 更新翻译值 - 后端返回数组格式: [{ culture: "zh-CN", value: "首页" }, ...]
       // 兼容大写 Translations 和小写 translations
-      const trans = (data as any).Translations || (data as any).translations;
-      if (trans && Array.isArray(trans)) {
-        trans.forEach((t: any) => {
-          // 兼容大写 Culture/Value 和小写 culture/value
-          const cultureName = t.Culture || t.culture;
-          const translationValue = t.Value || t.value;
-          const translation = translations.value.find(tr => tr.culture === cultureName);
-          if (translation) {
-            translation.value = translationValue || '';
-          }
-        });
-      }
+      const trans = data.translations;
+
+      trans.forEach((t: any) => {
+        // 兼容大写 Culture/Value 和小写 culture/value
+        const cultureName = t.culture;
+        const translationValue = t.value;
+        const translation = translations.value.find(tr => tr.culture === cultureName);
+        if (translation) {
+          translation.value = translationValue || '';
+        }
+      });
     } else {
       // 如果资源不存在，清空翻译值
       translations.value.forEach(t => {
@@ -139,27 +138,20 @@ watch(visible, val => {
             v-model="description"
             type="textarea"
             :rows="2"
-            :placeholder="$t('page.manage.menu.localization.descriptionPlaceholder')"
-          />
+            :placeholder="$t('page.manage.menu.localization.descriptionPlaceholder')" />
         </ElFormItem>
 
         <ElDivider content-position="left">{{ $t('page.manage.menu.localization.translationContent') }}</ElDivider>
-
+ <pre>{{ translations }}</pre>
         <ElFormItem v-for="translation in translations" :key="translation.culture" :label="translation.label">
-          <ElInput
-            v-model="translation.value"
+
+          <ElInput v-model="translation.value"
             :placeholder="$t('page.manage.menu.localization.translationPlaceholder', { lang: translation.label })"
-            clearable
-          />
+            clearable />
         </ElFormItem>
 
-        <ElAlert
-          :title="$t('page.manage.menu.localization.tipTitle')"
-          type="info"
-          :closable="false"
-          show-icon
-          class="mb-16px"
-        >
+        <ElAlert :title="$t('page.manage.menu.localization.tipTitle')" type="info" :closable="false" show-icon
+          class="mb-16px">
           <template #default>
             <div class="text-12px">
               <p>• {{ $t('page.manage.menu.localization.tipResourceKey') }}</p>

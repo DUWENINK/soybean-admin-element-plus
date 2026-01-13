@@ -97,7 +97,7 @@ function getComponentPath(menu: Api.SystemManage.Menu, hasLayoutParent = false):
 
     // Log warning if component might not exist (for debugging)
     if (import.meta.env.DEV) {
-      console.warn(`[Menu Transform] Component path: ${componentPath} for menu: ${menu.Name}`);
+      console.warn(`[Menu Transform] Component path: ${componentPath} for menu: ${menu.name}`);
     }
 
     // If parent already has layout, just use view component
@@ -141,7 +141,7 @@ export function getPermissionsFromMenus(menus: Api.SystemManage.Menu[]): string[
  * Get first available page route from menus
  * Skip folder and API type menus, find the first Page menu
  */
-export function getFirstPageRoute(menus: Api.SystemManage.Menu[]): Api.Menu.MenuTreeDto | null {
+export function getFirstPageRoute(menus: Api.SystemManage.Menu[]): Api.SystemManage.Menu | null {
   for (const menu of menus) {
     // If it's a Page menu and it's visible, return it
     if (menu.menuType === 'Page' && menu.show) {
