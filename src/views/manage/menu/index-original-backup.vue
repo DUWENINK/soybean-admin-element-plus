@@ -1,4 +1,4 @@
-<script setup lang="tsx">
+<!-- <script setup lang="tsx">
 import { ref } from 'vue';
 import type { Ref } from 'vue';
 import { ElButton, ElPopconfirm, ElTag } from 'element-plus';
@@ -6,7 +6,7 @@ import { useBoolean } from '@sa/hooks';
 import { yesOrNoRecord } from '@/constants/common';
 import { enableStatusRecord, menuTypeRecord } from '@/constants/business';
 import { fetchGetAllPages, fetchGetMenuList } from '@/service/api';
-import { defaultTransform, useTableOperate, useUIPaginatedTable } from '@/hooks/common/table';
+import { backendPagedTransform, defaultTransform, useTableOperate, useUIPaginatedTable } from '@/hooks/common/table';
 import { $t } from '@/locales';
 import SvgIcon from '@/components/custom/svg-icon.vue';
 import MenuOperateModal, { type OperateType } from './modules/menu-operate-modal.vue';
@@ -17,7 +17,7 @@ const wrapperRef = ref<HTMLElement | null>(null);
 
 const { columns, columnChecks, data, loading, pagination, getData, getDataByPage } = useUIPaginatedTable({
   api: () => fetchGetMenuList(),
-  transform: response => defaultTransform(response),
+  transform: response => backendPagedTransform<Api.SystemManage.Menu>(response),
   columns: () => [
     { prop: 'selection', type: 'selection', width: 48 },
     { prop: 'id', label: $t('page.manage.menu.id') },
@@ -41,11 +41,7 @@ const { columns, columnChecks, data, loading, pagination, getData, getDataByPage
       label: $t('page.manage.menu.menuName'),
       minWidth: 120,
       formatter: row => {
-        const { i18nKey, menuName } = row;
-
-        const label = i18nKey ? $t(i18nKey) : menuName;
-
-        return <span>{label}</span>;
+        return <span>{row.localizedName}</span>;
       }
     },
     {
@@ -53,13 +49,14 @@ const { columns, columnChecks, data, loading, pagination, getData, getDataByPage
       label: $t('page.manage.menu.icon'),
       width: 100,
       formatter: row => {
-        const icon = row.iconType === '1' ? row.icon : undefined;
+        // const icon = row.iconType === '1' ? row.icon : undefined;
 
-        const localIcon = row.iconType === '2' ? row.icon : undefined;
+        // const localIcon = row.iconType === '2' ? row.icon : undefined;
 
         return (
           <div class="flex-center">
-            <SvgIcon icon={icon} localIcon={localIcon} class="text-icon" />
+            {/* <SvgIcon icon={icon} localIcon={localIcon} class="text-icon" /> */}
+            <i class="el-icon-edit"></i>
           </div>
         );
       }
@@ -244,4 +241,4 @@ init();
     height: calc(100% - 50px);
   }
 }
-</style>
+</style> -->

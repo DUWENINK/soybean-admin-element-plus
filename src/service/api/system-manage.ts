@@ -178,10 +178,10 @@ export function fetchSaveGenericLocalization(
   });
 }
 
-/** get action log list */
-export function fetchGetActionLogList(params?: Api.SystemManage.ActionLogSearchParams) {
+/** get action log list - 使用后端分页格式 */
+export function fetchGetActionLogList(params?: Api.Common.BackendPageRequestParams<any>) {
   return request<Api.SystemManage.ActionLogList>({
-    url: '/api/ActionLog/Search',
+    url: '/api/actionLog/search',
     method: 'post',
     data: params
   });
@@ -196,10 +196,10 @@ export function fetchDeleteActionLog(ids: string[]) {
   });
 }
 
-/** get cache list */
-export function fetchGetCacheList(params?: Api.SystemManage.CacheSearchParams) {
+/** get cache list - 使用后端分页格式 */
+export function fetchGetCacheList(params?: Api.Common.BackendPageRequestParams<any>) {
   return request<Api.SystemManage.CacheList>({
-    url: '/api/CacheManagement/search',
+    url: '/api/cacheManagement/search',
     method: 'post',
     data: params
   });

@@ -22,21 +22,21 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
   const token = ref(getToken());
 
   const userInfo: Api.Auth.UserInfo = reactive({
-    Id: '',
-    ITCode: '',
-    Name: '',
-    PhotoId: '',
-    IsSuperUser: false,
-    Roles: [],
-    Departments: [],
-    TimeTick: 0
+    id: '',
+    itCode: '',
+    name: '',
+    photoId: '',
+    isSuperUser: false,
+    roles: [],
+    departments: [],
+    timeTick: 0
   });
 
   /** is super role in static route */
   const isStaticSuper = computed(() => {
     const { VITE_AUTH_ROUTE_MODE } = import.meta.env;
 
-    return VITE_AUTH_ROUTE_MODE === 'static' && userInfo.IsSuperUser;
+    return VITE_AUTH_ROUTE_MODE === 'static' && userInfo.isSuperUser;
   });
 
   /** Is login */
@@ -60,12 +60,12 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
 
   /** Record the user ID of the previous login session Used to compare with the current user ID on next login */
   function recordUserId() {
-    if (!userInfo.Id) {
+    if (!userInfo.id) {
       return;
     }
 
     // Store current user ID locally for next login comparison
-    localStg.set('lastLoginUserId', userInfo.Id);
+    localStg.set('lastLoginUserId', userInfo.id);
   }
 
   /**
@@ -74,14 +74,14 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
    * @returns {boolean} Whether to clear all tabs
    */
   function checkTabClear(): boolean {
-    if (!userInfo.Id) {
+    if (!userInfo.id) {
       return false;
     }
 
     const lastLoginUserId = localStg.get('lastLoginUserId');
 
     // Clear all tabs if current user is different from previous user
-    if (lastLoginUserId !== userInfo.Id) {
+    if (lastLoginUserId !== userInfo.id) {
       localStg.remove('globalTabs');
       tabStore.clearTabs();
 
@@ -119,7 +119,7 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
 
         window.$notification?.success({
           title: $t('page.login.common.loginSuccess'),
-          message: $t('page.login.common.welcomeBack', { userName: userInfo.Name }),
+          message: $t('page.login.common.welcomeBack', { userName: userInfo.name }),
           duration: 4500
         });
       }

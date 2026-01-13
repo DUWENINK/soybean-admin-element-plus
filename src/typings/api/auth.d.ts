@@ -13,26 +13,26 @@ declare namespace Api {
     }
 
     interface RoleInfo {
-      Id: string;
-      Code: string;
-      Name: string;
+      id: string;
+      code: string;
+      name: string;
     }
 
     interface DepartmentInfo {
-      Id: string;
-      Code: string;
-      Name: string;
+      id: string;
+      code: string;
+      name: string;
     }
 
     interface UserInfo {
-      Id: string;
-      ITCode: string;
-      Name: string;
-      PhotoId?: string;
-      IsSuperUser: boolean;
-      Roles: RoleInfo[];
-      Departments: DepartmentInfo[];
-      TimeTick: number;
+      id: string;
+      itCode: string;
+      name: string;
+      photoId?: string;
+      isSuperUser: boolean;
+      roles: RoleInfo[];
+      departments: DepartmentInfo[];
+      timeTick: number;
     }
   }
 }

@@ -4,16 +4,16 @@ import type { TableColumnCheck } from '@sa/hooks';
 import { $t } from '@/locales';
 import type { AlovaGenerics, Method } from '~/packages/alova/src';
 
-type TableAlovaApiFn<T = any, R = Api.Common.CommonSearchParams> = (
+type TableAlovaApiFn<T = any, R = Api.Common.BackendPageRequestParams> = (
   params: R
-) => Method<AlovaGenerics<Api.Common.PaginatingQueryRecord<T>>>;
+) => Method<AlovaGenerics<Api.Common.BackendPagedResult<T>>>;
 
 type PartialColumnCtx<T extends object> = Partial<TableColumnCtx<T>>;
 // this hook is used to manage table columns
 // if you choose alova, you can move this hook to the `src/hooks` to handle all list page in your project
 export default function useCheckedColumns<
   A extends TableAlovaApiFn,
-  T extends object = Awaited<ReturnType<A>>['records'][number]
+  T extends object = Awaited<ReturnType<A>>['datas'][number]
 >(getColumns: () => PartialColumnCtx<T>[]) {
   const SELECTION_KEY = '__selection__';
 

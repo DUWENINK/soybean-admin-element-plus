@@ -23,10 +23,9 @@ export const request = createFlatRequest(
       refreshTokenPromise: null
     } as RequestInstanceState,
     transform(response: AxiosResponse<App.Service.Response<any>>) {
-      // Support old project response format: { Code, Message, Data }
-      if ('Data' in response.data && 'Code' in response.data) {
-        return response.data.Data;
-      }
+      // Support backend NormalResult format: { Code, Message, Data }
+      // This is the C# backend standard response structure
+      // Support frontend standard format: { code, msg, data }
       return response.data.data;
     },
     async onRequest(config) {
@@ -38,18 +37,19 @@ export const request = createFlatRequest(
       return config;
     },
     isBackendSuccess(response) {
-      // Support old project response format: { Code, Message, Data }
+      // Support backend NormalResult format: { Code, Message, Data }
+      // In C# backend, Code 200 means success
       if ('Code' in response.data) {
-        // In old project, Code 200 means success
         return response.data.Code === 200;
       }
-      // when the backend response code is "0000"(default), it means the request is success
-      // to change this logic by yourself, you can modify the `VITE_SERVICE_SUCCESS_CODE` in `.env` file
+      // Support frontend standard format where code is "0000" (string)
+      // You can modify the `VITE_SERVICE_SUCCESS_CODE` in `.env` file
       return String(response.data.code) === import.meta.env.VITE_SERVICE_SUCCESS_CODE;
     },
     async onBackendFail(response, instance) {
       const authStore = useAuthStore();
-      const responseCode = String(response.data.code);
+      // Support both backend NormalResult format (Code) and frontend format (code)
+      const responseCode = String(response.data.Code || response.data.code);
 
       function handleLogout() {
         authStore.resetStore();
@@ -59,7 +59,7 @@ export const request = createFlatRequest(
         handleLogout();
         window.removeEventListener('beforeunload', handleLogout);
 
-        request.state.errMsgStack = request.state.errMsgStack.filter(msg => msg !== response.data.msg);
+        request.state.errMsgStack = request.state.errMsgStack.filter(msg => msg !== errorMessage);
       }
 
       // when the backend response code is in `logoutCodes`, it means the user will be logged out and redirected to login page
@@ -71,14 +71,15 @@ export const request = createFlatRequest(
 
       // when the backend response code is in `modalLogoutCodes`, it means the user will be logged out by displaying a modal
       const modalLogoutCodes = import.meta.env.VITE_SERVICE_MODAL_LOGOUT_CODES?.split(',') || [];
-      if (modalLogoutCodes.includes(responseCode) && !request.state.errMsgStack?.includes(response.data.msg)) {
-        request.state.errMsgStack = [...(request.state.errMsgStack || []), response.data.msg];
+      const errorMessage = response.data.Message || response.data.msg;
+      if (modalLogoutCodes.includes(responseCode) && !request.state.errMsgStack?.includes(errorMessage)) {
+        request.state.errMsgStack = [...(request.state.errMsgStack || []), errorMessage];
 
         // prevent the user from refreshing the page
         window.addEventListener('beforeunload', handleLogout);
 
         window.$messageBox
-          ?.confirm(response.data.msg, $t('common.error'), {
+          ?.confirm(errorMessage, $t('common.error'), {
             confirmButtonText: $t('common.confirm'),
             cancelButtonText: $t('common.cancel'),
             type: 'error',

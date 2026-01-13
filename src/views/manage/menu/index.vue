@@ -316,20 +316,20 @@ function renderMenuType(menuType: Api.SystemManage.MenuType) {
 function renderIcon(row: Api.SystemManage.Menu) {
   return (
     <div class="flex-center">
-      <SvgIcon icon={row.Icon} class="text-icon" />
+      <SvgIcon icon={row.icon} class="text-icon" />
     </div>
   );
 }
 
 // Render menu name
 function renderMenuName(row: Api.SystemManage.Menu) {
-  return <LocalizedMenuName menuKey={row.Name} localizedName={row.LocalizedName} />;
+  return <LocalizedMenuName menuKey={row.name} localizedName={row.localizedName} />;
 }
 
 // Render status
 function renderStatus(row: Api.SystemManage.Menu) {
-  const tagType: UI.ThemeColor = row.Show ? 'success' : 'warning';
-  const label = row.Show ? '显示' : '隐藏';
+  const tagType: UI.ThemeColor = row.show ? 'success' : 'warning';
+  const label = row.show ? '显示' : '隐藏';
   return <ElTag type={tagType}>{label}</ElTag>;
 }
 
@@ -337,7 +337,7 @@ function renderStatus(row: Api.SystemManage.Menu) {
 function renderOperations(row: Api.SystemManage.Menu) {
   return (
     <div class="flex-center justify-end gap-8px pr-10px">
-      {(row.MenuType === 'Folder' || row.MenuType === 'Page') && (
+      {(row.menuType === 'Folder' || row.menuType === 'Page') && (
         <ElButton type="primary" plain size="small" onClick={() => handleAddChildMenu(row)}>
           {$t('page.manage.menu.addChildMenu')}
         </ElButton>
@@ -438,20 +438,16 @@ function renderOperations(row: Api.SystemManage.Menu) {
               @node-drop="handleNodeDrop"
             >
               <template #default="{ node, data }">
-                <div
-                  class="custom-tree-node"
-                  @mouseenter="hoveredNodeId = data.Id"
-                  @mouseleave="hoveredNodeId = null"
-                >
+                <div class="custom-tree-node" @mouseenter="hoveredNodeId = data.Id" @mouseleave="hoveredNodeId = null">
                   <!-- Icon -->
                   <SvgIcon :icon="data.Icon" class="tree-icon text-icon" :class="{ 'opacity-50': !data.Show }" />
 
                   <!-- Menu info -->
                   <div class="menu-info">
                     <div class="menu-name" :class="{ 'opacity-50': !data.Show }">
-                      <LocalizedMenuName :menu-key="data.Name" :localized-name="data.LocalizedName" />
+                      <LocalizedMenuName :menu-key="data.name" :localized-name="data.localizedName" />
                     </div>
-                    <div v-if="data.Resource" class="menu-resource">{{ data.Resource }}</div>
+                    <div v-if="data.resource" class="menu-resource">{{ data.resource }}</div>
                   </div>
 
                   <!-- Action buttons (show on hover) -->
@@ -503,7 +499,7 @@ function renderOperations(row: Api.SystemManage.Menu) {
             <ElScrollbar class="detail-scrollbar">
               <ElForm :model="selectedMenu" label-position="right" :label-width="120" class="detail-form">
                 <ElFormItem :label="$t('page.manage.menu.menuType')">
-                  <ElRadioGroup v-model="selectedMenu.MenuType" disabled>
+                  <ElRadioGroup v-model="selectedMenu.menuType" disabled>
                     <ElRadio v-for="item in menuTypeOptions" :key="item.value" :value="item.value" :label="item.value">
                       {{  $t(item.label) }}
                     </ElRadio>
@@ -511,7 +507,7 @@ function renderOperations(row: Api.SystemManage.Menu) {
                 </ElFormItem>
 
                 <ElFormItem :label="$t('page.manage.menu.menuName')">
-                  <ElInput v-model="selectedMenu.Name" :placeholder="$t('page.manage.menu.form.menuName')">
+                  <ElInput v-model="selectedMenu.name" :placeholder="$t('page.manage.menu.form.menuName')">
                     <template #append>
                       <ElButton @click="openLocalizationEditor">
                         <icon-mdi:translate class="text-icon" />
@@ -521,26 +517,28 @@ function renderOperations(row: Api.SystemManage.Menu) {
                 </ElFormItem>
 
                 <ElFormItem
-                  v-if="selectedMenu.MenuType !== 'Api'"
+                  v-if="selectedMenu.menuType !== 'Api'"
                   :label="
-                    selectedMenu.MenuType === 'External' ? $t('page.manage.menu.href') : $t('page.manage.menu.routePath')
+                    selectedMenu.menuType === 'External'
+                      ? $t('page.manage.menu.href')
+                      : $t('page.manage.menu.routePath')
                   "
                 >
                   <ElInput
-                    v-model="selectedMenu.Resource"
+                    v-model="selectedMenu.resource"
                     :placeholder="
-                      selectedMenu.MenuType === 'External'
+                      selectedMenu.menuType === 'External'
                         ? 'https://example.com'
-                        : selectedMenu.MenuType === 'Folder'
+                        : selectedMenu.menuType === 'Folder'
                           ? '/system'
                           : '/user/list'
                     "
                   />
                 </ElFormItem>
 
-                <ElFormItem v-if="selectedMenu.MenuType === 'Page'" :label="$t('page.manage.menu.component')">
+                <ElFormItem v-if="selectedMenu.menuType === 'Page'" :label="$t('page.manage.menu.component')">
                   <ElSelect
-                    v-model="selectedMenu.Component"
+                    v-model="selectedMenu.component"
                     clearable
                     filterable
                     :placeholder="$t('page.manage.menu.form.page')"
@@ -550,27 +548,27 @@ function renderOperations(row: Api.SystemManage.Menu) {
                 </ElFormItem>
 
                 <ElFormItem :label="$t('page.manage.menu.icon')">
-                  <ElInput v-model="selectedMenu.Icon" :placeholder="$t('page.manage.menu.form.icon')">
+                  <ElInput v-model="selectedMenu.icon" :placeholder="$t('page.manage.menu.form.icon')">
                     <template #suffix>
-                      <SvgIcon v-if="selectedMenu.Icon" :icon="selectedMenu.Icon" class="text-icon" />
+                      <SvgIcon v-if="selectedMenu.icon" :icon="selectedMenu.icon" class="text-icon" />
                     </template>
                   </ElInput>
                 </ElFormItem>
 
                 <ElFormItem :label="$t('page.manage.menu.order')">
                   <ElInputNumber
-                    v-model="selectedMenu.Order"
+                    v-model="selectedMenu.order"
                     class="w-full"
                     :placeholder="$t('page.manage.menu.form.order')"
                   />
                 </ElFormItem>
 
                 <ElFormItem :label="$t('page.manage.menu.show')">
-                  <ElSwitch v-model="selectedMenu.Show" />
+                  <ElSwitch v-model="selectedMenu.show" />
                 </ElFormItem>
 
-                <ElFormItem v-if="selectedMenu.MenuType !== 'Folder'" :label="$t('page.manage.menu.permissionCode')">
-                  <ElInput v-model="selectedMenu.PermissionCode" placeholder="sys:user:add" />
+                <ElFormItem v-if="selectedMenu.menuType !== 'Folder'" :label="$t('page.manage.menu.permissionCode')">
+                  <ElInput v-model="selectedMenu.permissionCode" placeholder="sys:user:add" />
                 </ElFormItem>
               </ElForm>
             </ElScrollbar>
@@ -592,13 +590,13 @@ function renderOperations(row: Api.SystemManage.Menu) {
           row-key="Id"
           :tree-props="{ children: 'Children', hasChildren: 'hasChildren' }"
           :default-expand-all="false"
-          @selection-change="checkedRowKeys = $event.map(item => item.Id)"
+          @selection-change="checkedRowKeys = $event.map((item: { id: any; }) => item.id)"
         >
           <ElTableColumn type="selection" width="48" />
           <ElTableColumn prop="Id" label="ID" width="250" />
           <ElTableColumn :label="$t('page.manage.menu.menuType')" width="100">
             <template #default="{ row }">
-              <component :is="renderMenuType(row.MenuType)" />
+              <component :is="renderMenuType(row.menuType)" />
             </template>
           </ElTableColumn>
           <ElTableColumn :label="$t('page.manage.menu.menuName')" min-width="150">

@@ -2,7 +2,8 @@
 import { ref } from 'vue';
 import { ElButton, ElPopconfirm, ElTag } from 'element-plus';
 import { fetchGetActionLogList, fetchDeleteActionLog } from '@/service/api';
-import { defaultTransform, useTableOperate, useUIPaginatedTable } from '@/hooks/common/table';
+import { backendPagedTransform, useTableOperate, useUIPaginatedTable } from '@/hooks/common/table';
+import { buildBackendPageRequestFromSearch } from '@/utils/request';
 import { $t } from '@/locales';
 import ActionLogSearch from './modules/actionlog-search.vue';
 
@@ -28,10 +29,12 @@ const { columns, columnChecks, data, getData, getDataByPage, loading, mobilePagi
     currentPage: searchParams.value.current,
     pageSize: searchParams.value.size
   },
-  api: () => fetchGetActionLogList(searchParams.value),
-  transform: response => {
-    return defaultTransform(response);
+  api: () => {
+    // 使用后端分页请求格式
+    const params = buildBackendPageRequestFromSearch(searchParams.value, 'ActionTime', 'desc');
+    return fetchGetActionLogList(params);
   },
+  transform: response => backendPagedTransform(response), // 使用后端分页转换函数
   onPaginationParamsChange: params => {
     searchParams.value.current = params.currentPage;
     searchParams.value.size = params.pageSize;

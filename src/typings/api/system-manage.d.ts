@@ -5,7 +5,13 @@ declare namespace Api {
    * backend api module: "systemManage"
    */
   namespace SystemManage {
-    type CommonSearchParams = Pick<Common.PaginatingCommonParams, 'current' | 'size'>;
+    /** 前端搜索通用参数（用于构建后端请求） */
+    type CommonSearchParams = {
+      /** 当前页码 */
+      current: number;
+      /** 每页大小 */
+      size: number;
+    };
 
     /** role */
     type Role = Common.CommonRecord<{
@@ -23,7 +29,7 @@ declare namespace Api {
     >;
 
     /** role list */
-    type RoleList = Common.PaginatingQueryRecord<Role>;
+    type RoleList = Common.BackendPagedResult<Role>;
 
     /** all role */
     type AllRole = Pick<Role, 'id' | 'roleName' | 'roleCode'>;
@@ -59,7 +65,7 @@ declare namespace Api {
     >;
 
     /** user list */
-    type UserList = Common.PaginatingQueryRecord<User>;
+    type UserList = Common.BackendPagedResult<User>;
 
     /**
      * menu type enum (from old project)
@@ -107,33 +113,33 @@ declare namespace Api {
     /** Menu data structure (compatible with old project) */
     type Menu = {
       /** menu ID */
-      Id: string;
+      id: string;
       /** menu name */
-      Name: string;
+      name: string;
       /** localized menu name */
-      LocalizedName?: string;
+      localizedName?: string;
       /** menu type */
-      MenuType: MenuType;
+      menuType: MenuType;
       /** resource path */
-      Resource: string;
+      resource: string;
       /** component path */
-      Component?: string;
+      component?: string;
       /** parent menu ID */
-      ParentId?: string;
+      parentId?: string;
       /** icon */
-      Icon: string;
+      icon: string;
       /** sort order */
-      Order: number;
+      order: number;
       /** whether to show */
-      Show: boolean;
+      show: boolean;
       /** permission code */
-      PermissionCode?: string;
+      permissionCode?: string;
       /** children menus */
-      Children?: Menu[];
+      children?: Menu[];
     };
 
     /** menu list */
-    type MenuList = Common.PaginatingQueryRecord<Menu>;
+    type MenuList = Common.BackendPagedResult<Menu>;
 
     type MenuTree = {
       id: number;
@@ -197,17 +203,17 @@ declare namespace Api {
 
     /** action log search params */
     type ActionLogSearchParams = CommonType.RecordNullable<{
-      ITCode?: string;
-      ActionUrl?: string;
-      LogType?: number[];
-      ActionTime?: [string, string];
-      IP?: string;
-      Duration?: [number, number];
+      iTCode?: string;
+      actionUrl?: string;
+      logType?: number[];
+      actionTime?: [string, string];
+      ip?: string;
+      duration?: [number, number];
     }> &
       CommonSearchParams;
 
-    /** action log list */
-    type ActionLogList = Common.PaginatingQueryRecord<ActionLog>;
+    /** action log list - 使用后端分页格式 */
+    type ActionLogList = Common.BackendPagedResult<ActionLog>;
 
     /** cache item */
     type CacheItem = {
@@ -216,7 +222,7 @@ declare namespace Api {
       /** cache value */
       value?: string;
       /** value type */
-      valueType: 'json' | 'string' | 'number' | 'boolean';
+      valueType: string;
       /** latest value preview */
       latestValue?: string;
       /** hits count */
@@ -225,10 +231,14 @@ declare namespace Api {
       misses: number;
       /** expiration time */
       expirationTime?: string;
-      /** expiration seconds */
-      expirationSeconds?: number;
+      /** TTL in seconds */
+      ttlSeconds?: number;
+      /** created time */
+      createdTime?: string;
+      /** last access time */
+      lastAccessTime?: string;
       /** size in bytes */
-      sizeInBytes: number;
+      sizeInBytes?: number;
     };
 
     /** cache search params */
@@ -238,8 +248,8 @@ declare namespace Api {
     }> &
       CommonSearchParams;
 
-    /** cache list */
-    type CacheList = Common.PaginatingQueryRecord<CacheItem>;
+    /** cache list - 使用后端分页格式 */
+    type CacheList = Common.BackendPagedResult<CacheItem>;
 
     /** cache statistics */
     type CacheStatistics = {

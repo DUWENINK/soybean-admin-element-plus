@@ -1,85 +1,8 @@
 /**
  * Menu utility functions
+ * Backend now returns camelCase format matching frontend expectations
+ * No conversion functions needed anymore
  */
-
-/**
- * Convert old project menu data to new project format
- * Old project uses: { Id, Name, MenuType, ParentId, Icon, Order, Show, PermissionCode, Resource, Component, Children }
- * New project uses: { id, menuName, menuType, parentId, icon, order, show, permissionCode, routePath, component, children }
- */
-export function convertOldMenuToNew(oldMenu: any): Api.SystemManage.Menu {
-  // Map old MenuType enum to new type
-  const menuTypeMap: Record<string, Api.SystemManage.MenuType> = {
-    Folder: '1',
-    Page: '2',
-    External: '3',
-    Api: '4'
-  };
-
-  const newMenu: Api.SystemManage.Menu = {
-    id: oldMenu.Id,
-    menuName: oldMenu.Name,
-    menuType: menuTypeMap[oldMenu.MenuType] || '1',
-    parentId: oldMenu.ParentId || 0,
-    icon: oldMenu.Icon || '',
-    iconType: '1', // Default to iconify
-    order: oldMenu.Order || 0,
-    status: oldMenu.Show ? '1' : '2',
-    show: oldMenu.Show,
-    permissionCode: oldMenu.PermissionCode,
-    routeName: oldMenu.Name || '',
-    routePath: oldMenu.Resource || '',
-    component: oldMenu.Component,
-    i18nKey: null,
-    keepAlive: false,
-    constant: false,
-    href: oldMenu.MenuType === 'External' ? oldMenu.Resource : null,
-    hideInMenu: !oldMenu.Show,
-    activeMenu: undefined,
-    multiTab: false,
-    fixedIndexInTab: undefined,
-    query: null,
-    buttons: null,
-    children: oldMenu.Children ? oldMenu.Children.map(convertOldMenuToNew) : null
-  };
-
-  return newMenu;
-}
-
-/**
- * Convert new project menu data to old project format for API submission
- */
-export function convertNewMenuToOld(newMenu: Partial<Api.SystemManage.Menu>): any {
-  // Map new type to old MenuType enum
-  const menuTypeMap: Record<Api.SystemManage.MenuType, string> = {
-    '1': 'Folder',
-    '2': 'Page',
-    '3': 'External',
-    '4': 'Api'
-  };
-
-  const oldMenu: any = {
-    Id: newMenu.id,
-    Name: newMenu.menuName,
-    MenuType: menuTypeMap[newMenu.menuType || '1'],
-    ParentId: newMenu.parentId || 0,
-    Icon: newMenu.icon,
-    Order: newMenu.order || 0,
-    Show: newMenu.show !== undefined ? newMenu.show : true,
-    PermissionCode: newMenu.permissionCode,
-    Resource: newMenu.routePath || newMenu.href || '',
-    Component: newMenu.component
-  };
-
-  // Remove undefined fields
-  Object.keys(oldMenu).forEach(key => {
-    if (oldMenu[key] === undefined) {
-      delete oldMenu[key];
-    }
-  });
-
-  return oldMenu;
-}
 
 /**
  * Build tree structure from flat array
@@ -175,22 +98,23 @@ export function getMenuParents<T extends { id: number | string; parentId: number
 
 /**
  * Extract all unique component paths from menu tree
+ * Backend now returns camelCase format
  *
  * @param menus - Menu tree data
  * @returns Array of unique component paths, sorted alphabetically
  */
-export function extractComponentsFromMenuTree(menus: Api.Menu.MenuTreeDto[]): string[] {
+export function extractComponentsFromMenuTree(menus: Api.SystemManage.Menu[]): string[] {
   const components = new Set<string>();
 
-  function traverse(menuList: Api.Menu.MenuTreeDto[]) {
+  function traverse(menuList: Api.SystemManage.Menu[]) {
     menuList.forEach(menu => {
       // Only extract component from Page type menus
-      if (menu.MenuType === 'Page' && menu.Component) {
-        components.add(menu.Component);
+      if (menu.menuType === 'Page' && menu.component) {
+        components.add(menu.component);
       }
       // Recursively traverse children
-      if (menu.Children && menu.Children.length > 0) {
-        traverse(menu.Children);
+      if (menu.children && menu.children.length > 0) {
+        traverse(menu.children);
       }
     });
   }

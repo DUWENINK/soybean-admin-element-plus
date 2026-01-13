@@ -1,4 +1,4 @@
-declare namespace Api {
+declare namespace MenuApi {
   /**
    * namespace Menu
    *
@@ -13,18 +13,18 @@ declare namespace Api {
     }
 
     interface MenuTreeDto {
-      Id: string; // 菜单ID
-      Name: string; // 菜单名称
-      LocalizedName: string; // 本地化名称
-      MenuType: MenuType; // 菜单类型
-      Resource: string; // 资源路径（路由路径）
-      Component: string; // 组件路径
-      ParentId?: string; // 父级菜单ID
-      Icon: string; // 菜单图标
-      Order: number; // 排序值
-      Show: boolean; // 是否显示
-      PermissionCode: string; // 权限标识
-      Children?: MenuTreeDto[]; // 子菜单
+      id: string; // 菜单ID
+      name: string; // 菜单名称
+      localizedName: string; // 本地化名称
+      menuType: MenuType; // 菜单类型
+      resource: string; // 资源路径（路由路径）
+      component: string; // 组件路径
+      parentId?: string; // 父级菜单ID
+      icon: string; // 菜单图标
+      order: number; // 排序值
+      show: boolean; // 是否显示
+      permissionCode: string; // 权限标识
+      children?: MenuTreeDto[]; // 子菜单
     }
   }
 }

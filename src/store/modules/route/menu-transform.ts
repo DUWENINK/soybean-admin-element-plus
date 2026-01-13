@@ -6,16 +6,16 @@ import type { ElegantConstRoute } from '@elegant-router/types';
  * @param parentMenuType - The type of parent menu (to determine if parent has layout)
  */
 export function transformMenuToRoute(
-  menu: Api.Menu.MenuTreeDto,
+  menu: Api.SystemManage.Menu,
   parentMenuType?: 'Folder' | 'Page' | 'Api' | 'External'
 ): ElegantConstRoute | null {
   // Skip API type menus as they are permission markers, not routes
-  if (menu.MenuType === 'Api') {
+  if (menu.menuType === 'Api') {
     return null;
   }
 
   // For Folder type menus, generate a path from the name if Resource is null
-  const menuPath = menu.Resource || `/${getRouteNameFromPath(menu.Name || 'folder')}`;
+  const menuPath = menu.resource || `/${getRouteNameFromPath(menu.name || 'folder')}`;
 
   // Check if parent is a Folder with layout
   const hasLayoutParent = parentMenuType === 'Folder';
@@ -25,19 +25,19 @@ export function transformMenuToRoute(
     path: menuPath,
     component: getComponentPath(menu, hasLayoutParent),
     meta: {
-      title: menu.LocalizedName || menu.Name,
-      icon: menu.Icon || 'mdi:menu',
-      order: menu.Order,
-      hide: !menu.Show,
-      permissions: menu.PermissionCode ? [menu.PermissionCode] : undefined
+      title: menu.localizedName || menu.name,
+      icon: menu.icon || 'mdi:menu',
+      order: menu.order,
+      hide: !menu.show,
+      permissions: menu.permissionCode ? [menu.permissionCode] : undefined
     }
   };
 
   // Handle children - pass current menu type as parent type
-  if (menu.Children && menu.Children.length > 0) {
-    const childRoutes = menu.Children.map(child => transformMenuToRoute(child, menu.MenuType)).filter(
-      (r): r is ElegantConstRoute => r !== null
-    );
+  if (menu.children && menu.children.length > 0) {
+    const childRoutes = menu.children
+      .map(child => transformMenuToRoute(child, menu.menuType))
+      .filter((r): r is ElegantConstRoute => r !== null);
     if (childRoutes.length > 0) {
       route.children = childRoutes;
     }
@@ -53,7 +53,7 @@ export function transformMenuToRoute(
  */
 export function getRouteNameFromPath(path: string): string {
   if (!path || path === '/') return 'root';
-debugger
+
   // Remove leading/trailing slashes and convert to underscore format
   const parts = path
     .replace(/^\/|\/$/g, '')
@@ -64,9 +64,7 @@ debugger
 
   // Convert to underscore format: /manage/user -> manage_user
   // This matches the frontend route naming convention (manage_user, manage_menu, etc.)
-  return parts
-    .map(part => part.replace(/[^a-zA-Z0-9-]/g, ''))
-    .join('_');
+  return parts.map(part => part.replace(/[^a-zA-Z0-9-]/g, '')).join('_');
 }
 
 /**
@@ -75,23 +73,23 @@ debugger
  * @param menu - The menu item
  * @param hasLayoutParent - Whether the parent route already has a layout
  */
-function getComponentPath(menu: Api.Menu.MenuTreeDto, hasLayoutParent = false): string {
-  if (menu.MenuType === 'External') {
+function getComponentPath(menu: Api.SystemManage.Menu, hasLayoutParent = false): string {
+  if (menu.menuType === 'External') {
     return 'layout.base$view.iframe-page';
   }
 
-  if (menu.MenuType === 'Folder') {
+  if (menu.menuType === 'Folder') {
     return 'layout.base';
   }
 
   // Page type - use placeholder component that shows "Component not configured"
   // This allows routes to work even when specific components don't exist yet
   // You can configure the actual component path in menu management later
-  if (menu.Component) {
+  if (menu.component) {
     // Convert old component path to new format
     // Old: views/system/user/index.vue
     // New: view.system_user
-    const componentPath = menu.Component
+    const componentPath = menu.component
       .replace(/^views\//, '')
       .replace(/\/index\.vue$/, '')
       .replace(/\.vue$/, '')
@@ -114,23 +112,23 @@ function getComponentPath(menu: Api.Menu.MenuTreeDto, hasLayoutParent = false): 
 /**
  * Transform menu tree to routes array
  */
-export function transformMenusToRoutes(menus: Api.Menu.MenuTreeDto[]): ElegantConstRoute[] {
+export function transformMenusToRoutes(menus: Api.SystemManage.Menu[]): ElegantConstRoute[] {
   return menus.map(menu => transformMenuToRoute(menu)).filter((r): r is ElegantConstRoute => r !== null);
 }
 
 /**
  * Get all permission codes from menu tree
  */
-export function getPermissionsFromMenus(menus: Api.Menu.MenuTreeDto[]): string[] {
+export function getPermissionsFromMenus(menus: Api.SystemManage.Menu[]): string[] {
   const permissions: string[] = [];
 
-  function traverse(menu: Api.Menu.MenuTreeDto) {
-    if (menu.PermissionCode) {
-      permissions.push(menu.PermissionCode);
+  function traverse(menu: Api.SystemManage.Menu) {
+    if (menu.permissionCode) {
+      permissions.push(menu.permissionCode);
     }
 
-    if (menu.Children) {
-      menu.Children.forEach(child => traverse(child));
+    if (menu.children) {
+      menu.children.forEach(child => traverse(child));
     }
   }
 
@@ -143,16 +141,16 @@ export function getPermissionsFromMenus(menus: Api.Menu.MenuTreeDto[]): string[]
  * Get first available page route from menus
  * Skip folder and API type menus, find the first Page menu
  */
-export function getFirstPageRoute(menus: Api.Menu.MenuTreeDto[]): Api.Menu.MenuTreeDto | null {
+export function getFirstPageRoute(menus: Api.SystemManage.Menu[]): Api.Menu.MenuTreeDto | null {
   for (const menu of menus) {
     // If it's a Page menu and it's visible, return it
-    if (menu.MenuType === 'Page' && menu.Show) {
+    if (menu.menuType === 'Page' && menu.show) {
       return menu;
     }
 
     // If it's a Folder with children, search recursively
-    if (menu.MenuType === 'Folder' && menu.Children && menu.Children.length > 0) {
-      const firstChild = getFirstPageRoute(menu.Children);
+    if (menu.menuType === 'Folder' && menu.children && menu.children.length > 0) {
+      const firstChild = getFirstPageRoute(menu.children);
       if (firstChild) {
         return firstChild;
       }

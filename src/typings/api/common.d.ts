@@ -5,23 +5,33 @@
  */
 declare namespace Api {
   namespace Common {
-    /** common params of paginating */
-    interface PaginatingCommonParams {
-      /** current page number */
-      current: number;
-      /** page size */
-      size: number;
-      /** total count */
-      total: number;
+    /** Backend PagedResult format (C# backend structure) */
+    interface BackendPagedResult<T = any> {
+      /** 总记录数 */
+      records: number;
+      /** 当前页的所有项 */
+      datas: T[];
+      /** 当前页 */
+      pageIndex: number;
+      /** 页大小 */
+      pageSize: number;
+      /** 页总数 */
+      totalPage: number;
     }
 
-    /** common params of paginating query list data */
-    interface PaginatingQueryRecord<T = any> extends PaginatingCommonParams {
-      records: T[];
+    /** Backend page request params (C# backend structure) */
+    interface BackendPageRequestParams<T = any> {
+      /** 搜索条件 */
+      search: T;
+      /** 页码 (从1开始) */
+      pageIndex: number;
+      /** 每页记录数 */
+      pageSize: number;
+      /** 排序字段 */
+      sortField?: string;
+      /** 排序方式 (asc/desc) */
+      sortType?: string;
     }
-
-    /** common search params of table */
-    type CommonSearchParams = Pick<Common.PaginatingCommonParams, 'current' | 'size'>;
 
     /**
      * enable status

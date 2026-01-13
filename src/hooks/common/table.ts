@@ -232,19 +232,56 @@ export function useTableOperate<TableData>(
   };
 }
 
-export function defaultTransform<ApiData>(
-  response: FlatResponseData<any, Api.Common.PaginatingQueryRecord<ApiData>>
+// /**
+//  * Default transform function for frontend standard format
+//  * Response: { records, current, size, total }
+//  *
+//  * @deprecated 已废弃，请使用 backendPagedTransform 函数适配后端 PagedResult 格式
+//  * 此函数仅用于兼容旧的前端格式，新代码应使用后端格式
+//  */
+// export function defaultTransform<ApiData>(
+//   response: FlatResponseData<any, any>
+// ): PaginationData<ApiData> {
+//   const { data, error } = response;
+
+//   if (!error) {
+//     // 兼容前端格式 { records, current, size, total }
+//     const { records, current, size, total } = data;
+
+//     return {
+//       data: records || [],
+//       pageNum: current || 1,
+//       pageSize: size || 10,
+//       total: total || 0
+//     };
+//   }
+
+//   return {
+//     data: [],
+//     pageNum: 1,
+//     pageSize: 10,
+//     total: 0
+//   };
+// }
+
+/**
+ * Transform function for C# backend PagedResult format
+ * Response: { Datas, PageIndex, PageSize, Records (total count), TotalPage }
+ */
+export function backendPagedTransform<ApiData>(
+  response: FlatResponseData<any, Api.Common.BackendPagedResult<ApiData>>
 ): PaginationData<ApiData> {
   const { data, error } = response;
 
   if (!error) {
-    const { records, current, size, total } = data;
+    // Backend returns: { Records: totalCount, Datas: items[], PageIndex, PageSize, TotalPage }
+    const { datas, pageIndex, pageSize, records: totalRecords } = data;
 
     return {
-      data: records,
-      pageNum: current,
-      pageSize: size,
-      total
+      data: datas || [],
+      pageNum: pageIndex,
+      pageSize,
+      total: totalRecords
     };
   }
 

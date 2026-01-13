@@ -7,7 +7,8 @@ import {
   fetchGetCacheStatistics,
   fetchBatchDeleteCache
 } from '@/service/api';
-import { defaultTransform, useTableOperate, useUIPaginatedTable } from '@/hooks/common/table';
+import { backendPagedTransform, useTableOperate, useUIPaginatedTable } from '@/hooks/common/table';
+import { buildBackendPageRequestFromSearch } from '@/utils/request';
 import { $t } from '@/locales';
 import CacheSearch from './modules/cache-search.vue';
 import CacheOperateDrawer from './modules/cache-operate-drawer.vue';
@@ -60,10 +61,12 @@ const { columns, columnChecks, data, getData, getDataByPage, loading, mobilePagi
     currentPage: searchParams.value.current,
     pageSize: searchParams.value.size
   },
-  api: () => fetchGetCacheList(searchParams.value),
-  transform: response => {
-    return defaultTransform(response);
+  api: () => {
+    // 使用后端分页请求格式
+    const params = buildBackendPageRequestFromSearch(searchParams.value, 'key', 'asc');
+    return fetchGetCacheList(params);
   },
+  transform: response => backendPagedTransform(response), // 使用后端分页转换函数
   onPaginationParamsChange: params => {
     searchParams.value.current = params.currentPage;
     searchParams.value.size = params.pageSize;
@@ -136,14 +139,11 @@ const { columns, columnChecks, data, getData, getDataByPage, loading, mobilePagi
   ]
 });
 
-const { operateType, checkedRowKeys, onBatchDeleted, onDeleted, openDrawer } = useTableOperate(data, getData);
-
-async function handleAdd() {
-  openDrawer('add');
-}
+const { drawerVisible, operateType, handleAdd, handleEdit, checkedRowKeys, onBatchDeleted, onDeleted } =
+  useTableOperate(data, 'key', getData);
 
 function edit(key: string) {
-  openDrawer('edit', key);
+  handleEdit(key);
 }
 
 async function handleDelete(key: string) {
@@ -230,9 +230,8 @@ onMounted(() => {
         :pagination="mobilePagination"
       />
       <CacheOperateDrawer
-        v-model:visible="openDrawer.visible"
+        v-model:visible="drawerVisible"
         :operate-type="operateType"
-        :row-data="openDrawer.editingData"
         @submitted="getData"
       />
     </ElCard>
