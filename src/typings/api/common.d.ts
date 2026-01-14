@@ -5,28 +5,34 @@
  */
 declare namespace Api {
   namespace Common {
-    /** Backend PagedResult format (C# backend structure) */
+    /**
+     * 后端分页响应 PagedResult<T>
+     * 与请求参数字段名保持一致
+     */
     interface BackendPagedResult<T = any> {
       /** 总记录数 */
       records: number;
       /** 当前页的所有项 */
       datas: T[];
-      /** 当前页 */
-      pageIndex: number;
-      /** 页大小 */
-      pageSize: number;
+      /** 当前页码 */
+      current: number;
+      /** 每页记录数 */
+      size: number;
       /** 页总数 */
       totalPage: number;
     }
 
-    /** Backend page request params (C# backend structure) */
+    /**
+     * 后端分页请求参数 PageBaseFilter<T>
+     * 前端搜索参数可直接作为请求体发送，无需转换
+     */
     interface BackendPageRequestParams<T = any> {
       /** 搜索条件 */
       search: T;
-      /** 页码 (从1开始) */
-      pageIndex: number;
+      /** 当前页码 (从1开始) */
+      current: number;
       /** 每页记录数 */
-      pageSize: number;
+      size: number;
       /** 排序字段 */
       sortField?: string;
       /** 排序方式 (asc/desc) */

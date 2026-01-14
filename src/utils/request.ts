@@ -1,110 +1,64 @@
 /**
- * Request utility functions for API parameter transformation
+ * 后端请求参数工具函数
  */
 
 /**
- * Build backend page request params (C# PageBaseFilter format)
- * Converts frontend pagination format to backend PageBaseFilter<T> format
+ * 从搜索参数中提取纯搜索条件（移除分页字段）
  *
- * @param search - Search condition object
- * @param pageIndex - Current page number (1-based)
- * @param pageSize - Page size
- * @param sortField - Sort field name (optional, default: 'Id')
- * @param sortType - Sort type (optional, default: 'asc')
- * @returns Backend PageBaseFilter request object
+ * @param searchParams - 包含分页信息的搜索参数
+ * @returns 纯搜索条件对象
  *
  * @example
  * ```ts
- * const params = buildBackendPageRequest(
- *   { ITCode: 'admin', ActionUrl: '/api/test' },
- *   1,
- *   30,
- *   'ActionTime',
- *   'desc'
- * );
- * // Returns: {
- * //   Search: { ITCode: 'admin', ActionUrl: '/api/test' },
- * //   PageIndex: 1,
- * //   PageSize: 30,
- * //   SortField: 'ActionTime',
- * //   SortType: 'desc'
- * // }
- * ```
- */
-export function buildBackendPageRequest<T extends Record<string, any>>(
-  search: T,
-  pageIndex: number,
-  pageSize: number,
-  sortField: string = 'Id',
-  sortType: 'asc' | 'desc' = 'asc'
-): Api.Common.BackendPageRequestParams<T> {
-  return {
-    search: search,
-    pageIndex: pageIndex,
-    pageSize: pageSize,
-    sortField: sortField,
-    sortType: sortType
-  };
-}
-
-/**
- * Extract search params from frontend pagination search params
- * Removes pagination-specific fields (current, size) and returns only search conditions
- *
- * @param searchParams - Frontend search params with pagination
- * @returns Pure search condition object
- *
- * @example
- * ```ts
- * const frontendParams = {
- *   current: 1,
- *   size: 30,
- *   ITCode: 'admin',
- *   ActionUrl: '/api/test'
- * };
- * const search = extractSearchParams(frontendParams);
- * // Returns: { ITCode: 'admin', ActionUrl: '/api/test' }
+ * const params = { current: 1, size: 30, keywords: 'test' };
+ * const search = extractSearchParams(params);
+ * // 返回: { keywords: 'test' }
  * ```
  */
 export function extractSearchParams<T extends Record<string, any>>(
   searchParams: T
-): Omit<T, 'current' | 'size'> {
-  const { current, size, ...search } = searchParams as any;
+): Omit<T, 'current' | 'size' | 'sortField' | 'sortType'> {
+  const { current, size, sortField, sortType, ...search } = searchParams as any;
   return search;
 }
 
 /**
- * Build backend page request from frontend search params
- * Combines extractSearchParams and buildBackendPageRequest for convenience
+ * 构建后端分页请求参数
+ * 将前端搜索参数转换为后端 PageBaseFilter<T> 格式
  *
- * @param searchParams - Frontend search params with current and size
- * @param sortField - Sort field name (optional, default: 'Id')
- * @param sortType - Sort type (optional, default: 'asc')
- * @returns Backend PageBaseFilter request object
+ * @param searchParams - 前端搜索参数 (包含 current, size, sortField?, sortType?, 及其他搜索条件)
+ * @returns 后端 PageBaseFilter 请求对象
  *
  * @example
  * ```ts
- * const frontendParams = {
+ * const searchParams = {
  *   current: 1,
  *   size: 30,
- *   ITCode: 'admin',
- *   ActionUrl: '/api/test'
+ *   sortField: 'key',
+ *   sortType: 'asc',
+ *   keywords: 'test'
  * };
- * const backendParams = buildBackendPageRequestFromSearch(frontendParams, 'ActionTime', 'desc');
- * // Returns: {
- * //   Search: { ITCode: 'admin', ActionUrl: '/api/test' },
- * //   PageIndex: 1,
- * //   PageSize: 30,
- * //   SortField: 'ActionTime',
- * //   SortType: 'desc'
+ * const params = buildPageRequest(searchParams);
+ * // 返回: {
+ * //   search: { keywords: 'test' },
+ * //   current: 1,
+ * //   size: 30,
+ * //   sortField: 'key',
+ * //   sortType: 'asc'
  * // }
  * ```
  */
-export function buildBackendPageRequestFromSearch<T extends Record<string, any> & { current: number; size: number }>(
-  searchParams: T,
-  sortField: string = 'Id',
-  sortType: 'asc' | 'desc' = 'asc'
-): Api.Common.BackendPageRequestParams<Omit<T, 'current' | 'size'>> {
+export function buildPageRequest<T extends { current: number; size: number; sortField?: string; sortType?: string }>(
+  searchParams: T
+): Api.Common.BackendPageRequestParams<Omit<T, 'current' | 'size' | 'sortField' | 'sortType'>> {
+  const { current, size, sortField = 'id', sortType = 'asc' } = searchParams;
   const search = extractSearchParams(searchParams);
-  return buildBackendPageRequest(search, searchParams.current, searchParams.size, sortField, sortType);
+
+  return {
+    search,
+    current,
+    size,
+    sortField,
+    sortType
+  };
 }
