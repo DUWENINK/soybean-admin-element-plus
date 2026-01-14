@@ -3,7 +3,6 @@ import type { Ref } from 'vue';
 import type { PaginationEmits, PaginationProps } from 'element-plus';
 import { useBoolean, useTable } from '@sa/hooks';
 import type { PaginationData, TableColumnCheck, UseTableOptions } from '@sa/hooks';
-import type { FlatResponseData } from '@sa/axios';
 import { jsonClone } from '@sa/utils';
 import { useAppStore } from '@/store/modules/app';
 import { $t } from '@/locales';
@@ -82,6 +81,36 @@ type UseUIPaginatedTableOptions<ResponseData, ApiData> = UseUITableOptions<Respo
   showTotal?: boolean;
   onPaginationParamsChange?: (params: PaginationParams) => void | Promise<void>;
 };
+
+/**
+ * 后端分页表格 Options
+ * api 直接返回 BackendPagedResult<ApiData>，无需手动写 transform
+ */
+type UseBackendPaginatedTableOptions<ApiData> = UseUIPaginatedTableOptions<
+  Api.Common.BackendPagedResult<ApiData>,
+  ApiData
+> & {
+  /** API 调用函数，返回后端分页格式 */
+  api: () => Promise<Api.Common.BackendPagedResult<ApiData>>;
+};
+
+/**
+ * 专门用于后端分页格式的表格 Hook
+ * 自动处理 BackendPagedResult -> PaginationData 的转换
+ *
+ * @example
+ * ```ts
+ * const { columns, data, getData, loading } = useBackendPaginatedTable({
+ *   paginationProps,
+ *   api: () => fetchGetCacheList(buildPageRequest(searchParams.value)),
+ *   onPaginationParamsChange: syncPagination,
+ *   columns: () => [...]
+ * });
+ * ```
+ */
+export function useBackendPaginatedTable<ApiData>(options: UseBackendPaginatedTableOptions<ApiData>) {
+  return useUIPaginatedTable<Api.Common.BackendPagedResult<ApiData>, ApiData>(options);
+}
 
 export function useUIPaginatedTable<ResponseData, ApiData>(options: UseUIPaginatedTableOptions<ResponseData, ApiData>) {
   const scope = effectScope();
@@ -212,7 +241,7 @@ export function useTableOperate<TableData>(
   }
 
   /** the hook after the delete operation is completed */
-  async function onDeleted() {
+  async function onDeleted(p0: () => Promise<boolean>, p1: () => string) {
     window.$message?.success($t('common.deleteSuccess'));
 
     await getData();
@@ -265,32 +294,14 @@ export function useTableOperate<TableData>(
 // }
 
 /**
- * Transform function for C# backend PagedResult format
- * Response: { Datas, PageIndex, PageSize, Records (total count), TotalPage }
+ * 转换后端分页响应为前端分页数据格式
+ * 后端格式: { datas, currentPage, pageSize, records, totalPage }
+ * 前端格式: { data, pageNum, pageSize, total }
  */
 export function backendPagedTransform<ApiData>(
-  response: FlatResponseData<any, Api.Common.BackendPagedResult<ApiData>>
+  response: Api.Common.BackendPagedResult<ApiData>
 ): PaginationData<ApiData> {
-  const { data, error } = response;
-
-  if (!error) {
-    // Backend returns: { Records: totalCount, Datas: items[], PageIndex, PageSize, TotalPage }
-    const { datas, pageIndex, pageSize, records: totalRecords } = data;
-
-    return {
-      data: datas || [],
-      pageNum: pageIndex,
-      pageSize,
-      total: totalRecords
-    };
-  }
-
-  return {
-    data: [],
-    pageNum: 1,
-    pageSize: 10,
-    total: 0
-  };
+  return response;
 }
 
 function getColumnChecks<Column extends UI.TableColumn<any>>(
