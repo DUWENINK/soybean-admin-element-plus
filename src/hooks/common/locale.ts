@@ -66,10 +66,10 @@ export function useSupportedLocales() {
   async function loadSupportedCultures() {
     loading.value = true;
     try {
-      const { data, error } = await fetchGetSupportedCultures();
-      if (!error && data) {
-        defaultLocale.value = data.DefaultCulture || 'zh-CN';
-        supportedCultures.value = data.SupportedCultures || [];
+      const data = await fetchGetSupportedCultures();
+      if (data) {
+        defaultLocale.value = data.defaultCulture || 'zh-CN';
+        supportedCultures.value = data.supportedCultures || [];
 
         // 转换为语言选项
         localeOptions.value = supportedCultures.value.map(culture => ({

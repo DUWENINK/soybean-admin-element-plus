@@ -266,7 +266,7 @@ declare namespace Api {
     };
 
     /** menu localization translation */
-    type MenuLocalizationTranslation = {
+    type GenericLocalizationTranslation = {
       /** translation id */
       id: string;
       /** culture code (e.g., "zh-CN", "en-US") */
@@ -277,21 +277,6 @@ declare namespace Api {
       isVerified: boolean;
     };
 
-    /** menu localization */
-    type MenuLocalization = {
-      /** resource id */
-      id: string;
-      /** resource key */
-      key: string;
-      /** resource type */
-      resourceType: string;
-      /** description */
-      description?: string;
-      /** whether system resource */
-      isSystem: boolean;
-      /** translations array */
-      translations: MenuLocalizationTranslation[];
-    };
 
     /** save menu localization params */
     type SaveMenuLocalizationParams = {
@@ -327,7 +312,7 @@ declare namespace Api {
       /** whether system resource */
       isSystem: boolean;
       /** translations array */
-      translations: MenuLocalizationTranslation[];
+      translations: GenericLocalizationTranslation[];
     };
 
     /** generic save localization params */

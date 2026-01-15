@@ -1,10 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
-import {
-  fetchGetGenericLocalization,
-  fetchGetSupportedCultures,
-  fetchSaveGenericLocalization
-} from '@/service/api';
+import { fetchGetGenericLocalization, fetchSaveGenericLocalization } from '@/service/api';
+import { getLocaleDisplayName, useSupportedLocales } from '@/hooks/common/locale';
 import { $t } from '@/locales';
 
 defineOptions({ name: 'GenericLocalizationEditor' });
@@ -35,33 +32,17 @@ const visible = defineModel<boolean>('visible', {
 });
 
 const loading = ref(false);
-const culturesLoading = ref(false);
 
-// 语言显示名称映射 (可以从后端配置或本地配置)
-const cultureDisplayNames: Record<string, string> = {
-  'zh-CN': '简体中文',
-  'en-US': 'English',
-  'ja-JP': '日本語',
-  'zh-TW': '繁體中文',
-  'ko-KR': '한국어',
-  'fr-FR': 'Français',
-  'de-DE': 'Deutsch',
-  'es-ES': 'Español',
-  'it-IT': 'Italiano',
-  'pt-BR': 'Português',
-  'ru-RU': 'Русский'
-};
+// 使用 hook 管理语言列表
+const {
+  loading: culturesLoading,
+  supportedCultures,
+  defaultLocale: defaultCulture,
+  loadSupportedCultures
+} = useSupportedLocales();
 
-// 翻译数据
-interface Translation {
-  culture: string;
-  value: string;
-  label: string;
-}
 
-const supportedCultures = ref<string[]>([]);
-const defaultCulture = ref<string>('zh-CN');
-const translations = ref<Translation[]>([]);
+const translations = ref<Api.SystemManage.GenericLocalizationTranslation[]>([]);
 const description = ref('');
 
 // 标题
@@ -77,38 +58,22 @@ const title = computed(() => {
   return `编辑${prefix}多语言 - ${props.resourceKey}`;
 });
 
-// 加载支持的语言列表
-async function loadSupportedCultures() {
-  culturesLoading.value = true;
-  try {
-    const { data, error } = await fetchGetSupportedCultures();
-    if (!error && data) {
-      supportedCultures.value = data.supportedCultures || [];
-      defaultCulture.value = data.defaultCulture || 'zh-CN';
+/**
+ * 初始化翻译数组
+ */
+function initTranslations() {
+  // 基于 hook 中已加载的语言列表初始化翻译数组
+  translations.value = supportedCultures.value.map(culture => ({
+    culture,
+    value: '',
+    label: getLocaleDisplayName(culture)
+  }));
 
-      // 初始化翻译数组
-      translations.value = supportedCultures.value.map(culture => ({
-        culture,
-        value: '',
-        label: cultureDisplayNames[culture] || culture
-      }));
-
-      // 将默认语言排在第一位
-      const defaultIndex = translations.value.findIndex(t => t.culture === defaultCulture.value);
-      if (defaultIndex > 0) {
-        const defaultTrans = translations.value.splice(defaultIndex, 1)[0];
-        translations.value.unshift(defaultTrans);
-      }
-    }
-  } catch (err) {
-    console.error('Failed to load supported cultures:', err);
-    // 使用默认语言列表作为后备
-    translations.value = [
-      { culture: 'zh-CN', value: '', label: '简体中文' },
-      { culture: 'en-US', value: '', label: 'English' }
-    ];
-  } finally {
-    culturesLoading.value = false;
+  // 将默认语言排在第一位
+  const defaultIndex = translations.value.findIndex(t => t.culture === defaultCulture.value);
+  if (defaultIndex > 0) {
+    const defaultTrans = translations.value.splice(defaultIndex, 1)[0];
+    translations.value.unshift(defaultTrans);
   }
 }
 
@@ -198,6 +163,8 @@ watch(visible, async val => {
     if (supportedCultures.value.length === 0) {
       await loadSupportedCultures();
     }
+    // 初始化翻译数组
+    initTranslations();
     // 然后加载翻译数据
     await loadTranslations();
   }
@@ -234,6 +201,7 @@ const resourceKeyHint = computed(() => {
             <span>翻译内容</span>
           </div>
         </ElDivider>
+        <pre>{{ translations }} </pre>
         <ElFormItem
           v-for="translation in translations"
           :key="translation.culture"
@@ -253,7 +221,7 @@ const resourceKeyHint = computed(() => {
               <p>• 资源键用于在系统中引用多语言文本</p>
               <p>• 建议格式: {{ resourceKeyHint }}</p>
               <p>• 至少需要填写一个语言的翻译</p>
-              <p v-if="defaultCulture">• 默认语言: {{ cultureDisplayNames[defaultCulture] || defaultCulture }}</p>
+              <p v-if="defaultCulture">• 默认语言: {{ getLocaleDisplayName(defaultCulture) }}</p>
             </div>
           </template>
         </ElAlert>

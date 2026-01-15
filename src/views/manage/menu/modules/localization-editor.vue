@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
-import { fetchGetMenuLocalization, fetchSaveMenuLocalization } from '@/service/api';
+import { fetchGetGenericLocalization, fetchSaveMenuLocalization } from '@/service/api';
 import { $t } from '@/locales';
 
 defineOptions({ name: 'LocalizationEditor' });
@@ -47,9 +47,8 @@ async function loadTranslations() {
 
   loading.value = true;
   try {
-    const { data, error } = await fetchGetMenuLocalization(props.resourceKey);
-    if (!error && data) {
-      // 后端字段可能是大写（PascalCase）或小写（camelCase）
+    const data = await fetchGetGenericLocalization(props.resourceKey, 'Menu');
+    if (data) {
       const desc = data.description || '';
       description.value = desc;
 
@@ -58,7 +57,6 @@ async function loadTranslations() {
       const trans = data.translations;
 
       trans.forEach((t: any) => {
-        // 兼容大写 Culture/Value 和小写 culture/value
         const cultureName = t.culture;
         const translationValue = t.value;
         const translation = translations.value.find(tr => tr.culture === cultureName);
@@ -96,13 +94,13 @@ async function handleSave() {
       }
     });
 
-    const { error } = await fetchSaveMenuLocalization({
+    const success = await fetchSaveMenuLocalization({
       key: props.resourceKey,
       description: description.value,
       translations: translationsDict
     });
 
-    if (!error) {
+    if (success) {
       window.$message?.success($t('page.manage.menu.localization.saveSuccess'));
       closeModal();
       emit('submitted');
@@ -142,15 +140,20 @@ watch(visible, val => {
         </ElFormItem>
 
         <ElDivider content-position="left">{{ $t('page.manage.menu.localization.translationContent') }}</ElDivider>
- <pre>{{ translations }}</pre>
         <ElFormItem v-for="translation in translations" :key="translation.culture" :label="translation.label">
 
-          <ElInput v-model="translation.value"
+          <ElInput
+            v-model="translation.value"
             :placeholder="$t('page.manage.menu.localization.translationPlaceholder', { lang: translation.label })"
-            clearable />
+            clearable
+          />
         </ElFormItem>
 
-        <ElAlert :title="$t('page.manage.menu.localization.tipTitle')" type="info" :closable="false" show-icon
+        <ElAlert
+          :title="$t('page.manage.menu.localization.tipTitle')"
+          type="info"
+          :closable="false"
+          show-icon
           class="mb-16px">
           <template #default>
             <div class="text-12px">

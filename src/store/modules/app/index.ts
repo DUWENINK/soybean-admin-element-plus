@@ -29,6 +29,13 @@ export const useAppStore = defineStore(SetupStoreId.App, () => {
     toggle: toggleMixSiderFixed
   } = useBoolean(localStg.get('mixSiderFixed') === 'Y');
 
+  // 使用 hook 管理语言选项
+  const {
+    loading: localesLoading,
+    localeOptions,
+    loadSupportedCultures
+  } = useSupportedLocales();
+
   /** Is mobile layout */
   const isMobile = breakpoints.smaller('sm');
 
@@ -51,36 +58,15 @@ export const useAppStore = defineStore(SetupStoreId.App, () => {
 
   const locale = ref<App.I18n.LangType>(localStg.get('lang') || 'zh-CN');
 
-  // 动态语言选项 - 从后端加载
-  const localeOptions = ref<App.I18n.LangOption[]>([
-    { label: '简体中文', key: 'zh-CN' },
-    { label: 'English', key: 'en-US' }
-  ]);
-
-  const localesLoading = ref(false);
-
   /**
    * 从后端加载支持的语言列表
    */
   async function loadSupportedLocales() {
-    const { loadSupportedCultures } = useSupportedLocales();
-    localesLoading.value = true;
-
-    try {
-      const result = await loadSupportedCultures();
-      if (result.localeOptions.length > 0) {
-        localeOptions.value = result.localeOptions;
-
-        // 如果当前语言不在支持的语言列表中,切换到默认语言
-        const currentLangSupported = result.localeOptions.some(opt => opt.key === locale.value);
-        if (!currentLangSupported) {
-          changeLocale(result.defaultLocale as App.I18n.LangType);
-        }
-      }
-    } catch (error) {
-      console.error('Failed to load supported locales:', error);
-    } finally {
-      localesLoading.value = false;
+    const result = await loadSupportedCultures();
+    // 如果当前语言不在支持的语言列表中,切换到默认语言
+    const currentLangSupported = result.localeOptions.some(opt => opt.key === locale.value);
+    if (!currentLangSupported) {
+      changeLocale(result.defaultLocale as App.I18n.LangType);
     }
   }
 
