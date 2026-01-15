@@ -29,7 +29,7 @@ declare namespace Api {
     >;
 
     /** role list */
-    type RoleList = Common.BackendPagedResult<Role>;
+    type RoleList = Common.PagedResult<Role>;
 
     /** all role */
     type AllRole = Pick<Role, 'id' | 'roleName' | 'roleCode'>;
@@ -57,15 +57,14 @@ declare namespace Api {
       /** user role code collection */
       userRoles: string[];
     }>;
+    /** user search params */
+    type UserSearch = Pick<Api.SystemManage.User, 'userName' | 'userGender' | 'nickName' | 'userPhone' | 'userEmail' | 'status'>;
 
     /** user search params */
-    type UserSearchParams = CommonType.RecordNullable<
-      Pick<Api.SystemManage.User, 'userName' | 'userGender' | 'nickName' | 'userPhone' | 'userEmail' | 'status'> &
-        CommonSearchParams
-    >;
+    type UserSearchParams = Common.PageBaseFilter<UserSearch>;
 
     /** user list */
-    type UserList = Common.BackendPagedResult<User>;
+    type UserList = Common.PagedResult<User>;
 
     /**
      * menu type enum (from old project)
@@ -139,7 +138,7 @@ declare namespace Api {
     };
 
     /** menu list */
-    type MenuList = Common.BackendPagedResult<Menu>;
+    type MenuList = Common.PagedResult<Menu>;
 
     type MenuTree = {
       id: number;
@@ -178,9 +177,7 @@ declare namespace Api {
     };
 
     /** action log */
-    type ActionLog = {
-      /** log id */
-      id: string;
+    type ActionLog = Common.CommonRecord<{
       /** log type */
       logType: number;
       /** module name */
@@ -188,7 +185,7 @@ declare namespace Api {
       /** action name */
       actionName: string;
       /** user account */
-      iTCode: string;
+      itCode: string;
       /** action url */
       actionUrl: string;
       /** action time */
@@ -199,21 +196,23 @@ declare namespace Api {
       ip: string;
       /** remark */
       remark?: string;
-    };
+    }>;
 
     /** action log search params */
-    type ActionLogSearchParams = CommonType.RecordNullable<{
-      iTCode?: string;
-      actionUrl?: string;
-      logType?: number[];
-      actionTime?: [string, string];
-      ip?: string;
-      duration?: [number, number];
-    }> &
-      CommonSearchParams;
+    type ActionLogSearch = Partial<
+      Pick<ActionLog, 'logType' | 'moduleName' | 'actionName' | 'itCode' | 'actionUrl' | 'actionTime'>
+    >;
 
-    /** action log list - 使用后端分页格式 */
-    type ActionLogList = Common.BackendPagedResult<ActionLog>;
+    /** action log page request */
+    type ActionLogPageRequest = Common.PageBaseFilter<ActionLogSearch>;
+
+
+
+
+    /** action log list  */
+    type ActionLogList = Common.PagedResult<ActionLog>;
+
+
 
     /** cache item */
     type CacheItem = {
@@ -249,7 +248,7 @@ declare namespace Api {
       CommonSearchParams;
 
     /** cache list - 使用后端分页格式 */
-    type CacheList = Common.BackendPagedResult<CacheItem>;
+    type CacheList = Common.PagedResult<CacheItem>;
 
     /** cache statistics */
     type CacheStatistics = {

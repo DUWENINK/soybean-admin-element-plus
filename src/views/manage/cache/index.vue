@@ -1,12 +1,7 @@
 <script setup lang="tsx">
 import { onMounted, ref } from 'vue';
 import { ElButton, ElPopconfirm, ElTag, ElStatistic, ElRow, ElCol, ElDivider } from 'element-plus';
-import {
-  fetchGetCacheList,
-  fetchDeleteCache,
-  fetchGetCacheStatistics,
-  fetchBatchDeleteCache
-} from '@/service/api';
+import { fetchGetCacheList, fetchDeleteCache, fetchGetCacheStatistics, fetchBatchDeleteCache } from '@/service/api';
 import { backendPagedTransform, useTableOperate, useUIPaginatedTable } from '@/hooks/common/table';
 import { buildBackendPageRequestFromSearch } from '@/utils/request';
 import { $t } from '@/locales';

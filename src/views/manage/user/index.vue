@@ -14,29 +14,31 @@ const searchParams = ref(getInitSearchParams());
 
 function getInitSearchParams(): Api.SystemManage.UserSearchParams {
   return {
-    current: 1,
-    size: 30,
-    status: undefined,
-    userName: undefined,
-    userGender: undefined,
-    nickName: undefined,
-    userPhone: undefined,
-    userEmail: undefined
+    currentPage: 1,
+    pageSize: 30,
+    search: {
+      status: undefined,
+      userName: undefined,
+      userGender: undefined,
+      nickName: undefined,
+      userPhone: undefined,
+      userEmail: undefined
+    }
   };
 }
 
 const { columns, columnChecks, data, getData, getDataByPage, loading, mobilePagination } = useUIPaginatedTable({
   paginationProps: {
-    currentPage: searchParams.value.current,
-    pageSize: searchParams.value.size
+    currentPage: searchParams.value.currentPage,
+    pageSize: searchParams.value.pageSize
   },
   api: () => fetchGetUserList(searchParams.value),
   transform: response => {
     return backendPagedTransform(response);
   },
   onPaginationParamsChange: params => {
-    searchParams.value.current = params.currentPage;
-    searchParams.value.size = params.pageSize;
+    searchParams.value.currentPage = params.currentPage;
+    searchParams.value.pageSize = params.pageSize;
   },
   columns: () => [
     { prop: 'selection', type: 'selection', width: 48 },

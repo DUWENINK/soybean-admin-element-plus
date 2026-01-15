@@ -11,19 +11,21 @@ import UserOperateDrawer from './modules/user-operate-drawer.vue';
 import UserSearch from './modules/user-search.vue';
 
 const searchParams = ref({
-  status: undefined,
-  userName: undefined,
-  userGender: undefined,
-  nickName: undefined,
-  userPhone: undefined,
-  userEmail: undefined
+  search: {
+    status: undefined,
+    userName: undefined,
+    userGender: undefined,
+    nickName: undefined,
+    userPhone: undefined,
+    userEmail: undefined
+  }
 });
 const { loading, data, refresh, reload, page, pageSize, pageCount, send, remove, total } = usePagination(
   (pageNum, size) =>
     fetchGetUserList({
-      ...searchParams.value,
-      current: pageNum,
-      size
+      search: searchParams.value.search,
+      currentPage: pageNum,
+      pageSize: size
     }),
   {
     data: ({ records }) => records,

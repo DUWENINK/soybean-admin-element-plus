@@ -16,7 +16,7 @@ export function fetchGetAllRoles() {
 
 /** get user list */
 export function fetchGetUserList(params?: Api.SystemManage.UserSearchParams) {
-  return alova.Get<Api.SystemManage.UserList>('/systemManage/getUserList', { params });
+  return alova.Post<Api.SystemManage.UserList>('/systemManage/getUserList', params);
 }
 
 export type UserModel = Pick<

@@ -5,7 +5,7 @@ import { $t } from '@/locales';
 defineOptions({ name: 'ActionLogSearch' });
 
 interface Props {
-  model: Api.SystemManage.ActionLogSearchParams;
+  model: Api.SystemManage.ActionLogSearch;
 }
 
 const props = defineProps<Props>();
@@ -15,7 +15,7 @@ const emit = defineEmits<{
   search: [];
 }>();
 
-const model = defineModel<Api.SystemManage.ActionLogSearchParams>('model', { required: true });
+const model = defineModel<Api.SystemManage.ActionLogSearch>('model', { required: true });
 
 function reset() {
   emit('reset');

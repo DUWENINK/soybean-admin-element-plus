@@ -2,7 +2,7 @@ import { computed, effectScope, onScopeDispose, reactive, shallowRef, watch } fr
 import type { Ref } from 'vue';
 import type { PaginationEmits, PaginationProps } from 'element-plus';
 import { useBoolean, useTable } from '@sa/hooks';
-import type { PaginationData, TableColumnCheck, UseTableOptions } from '@sa/hooks';
+import type { TableColumnCheck, UseTableOptions } from '@sa/hooks';
 import { jsonClone } from '@sa/utils';
 import { useAppStore } from '@/store/modules/app';
 import { $t } from '@/locales';
@@ -82,35 +82,17 @@ type UseUIPaginatedTableOptions<ResponseData, ApiData> = UseUITableOptions<Respo
   onPaginationParamsChange?: (params: PaginationParams) => void | Promise<void>;
 };
 
-/**
- * 后端分页表格 Options
- * api 直接返回 BackendPagedResult<ApiData>，无需手动写 transform
- */
-type UseBackendPaginatedTableOptions<ApiData> = UseUIPaginatedTableOptions<
-  Api.Common.BackendPagedResult<ApiData>,
-  ApiData
-> & {
-  /** API 调用函数，返回后端分页格式 */
-  api: () => Promise<Api.Common.BackendPagedResult<ApiData>>;
-};
-
-/**
- * 专门用于后端分页格式的表格 Hook
- * 自动处理 BackendPagedResult -> PaginationData 的转换
- *
- * @example
- * ```ts
- * const { columns, data, getData, loading } = useBackendPaginatedTable({
- *   paginationProps,
- *   api: () => fetchGetCacheList(buildPageRequest(searchParams.value)),
- *   onPaginationParamsChange: syncPagination,
- *   columns: () => [...]
- * });
- * ```
- */
-export function useBackendPaginatedTable<ApiData>(options: UseBackendPaginatedTableOptions<ApiData>) {
-  return useUIPaginatedTable<Api.Common.BackendPagedResult<ApiData>, ApiData>(options);
-}
+// /**
+//  * 后端分页表格 Options
+//  * api 直接返回 BackendPagedResult<ApiData>，无需手动写 transform
+//  */
+// type UseBackendPaginatedTableOptions<ApiData> = UseUIPaginatedTableOptions<
+//   Api.Common.PagedResult<ApiData>,
+//   ApiData
+// > & {
+//   /** API 调用函数，返回后端分页格式 */
+//   api: () => Promise<Api.Common.PagedResult<ApiData>>;
+// };
 
 export function useUIPaginatedTable<ResponseData, ApiData>(options: UseUIPaginatedTableOptions<ResponseData, ApiData>) {
   const scope = effectScope();
@@ -231,19 +213,16 @@ export function useTableOperate<TableData>(
   /** the checked row keys of table */
   const checkedRowKeys = shallowRef<string[]>([]);
 
-  /** the hook after the batch delete operation is completed */
-  async function onBatchDeleted() {
+  async function onDeleted(deleteFn: () => Promise<void>) {
+    await deleteFn();
     window.$message?.success($t('common.deleteSuccess'));
-
-    checkedRowKeys.value = [];
-
     await getData();
   }
 
-  /** the hook after the delete operation is completed */
-  async function onDeleted(p0: () => Promise<boolean>, p1: () => string) {
+  async function onBatchDeleted(deleteFn: () => Promise<void>) {
+    await deleteFn();
+    checkedRowKeys.value = [];
     window.$message?.success($t('common.deleteSuccess'));
-
     await getData();
   }
 
@@ -259,49 +238,6 @@ export function useTableOperate<TableData>(
     onBatchDeleted,
     onDeleted
   };
-}
-
-// /**
-//  * Default transform function for frontend standard format
-//  * Response: { records, current, size, total }
-//  *
-//  * @deprecated 已废弃，请使用 backendPagedTransform 函数适配后端 PagedResult 格式
-//  * 此函数仅用于兼容旧的前端格式，新代码应使用后端格式
-//  */
-// export function backendPagedTransform<ApiData>(
-//   response: FlatResponseData<any, any>
-// ): PaginationData<ApiData> {
-//   const { data, error } = response;
-
-//   if (!error) {
-//     // 兼容前端格式 { records, current, size, total }
-//     const { records, current, size, total } = data;
-
-//     return {
-//       data: records || [],
-//       pageNum: current || 1,
-//       pageSize: size || 10,
-//       total: total || 0
-//     };
-//   }
-
-//   return {
-//     data: [],
-//     pageNum: 1,
-//     pageSize: 10,
-//     total: 0
-//   };
-// }
-
-/**
- * 转换后端分页响应为前端分页数据格式
- * 后端格式: { datas, currentPage, pageSize, records, totalPage }
- * 前端格式: { data, pageNum, pageSize, total }
- */
-export function backendPagedTransform<ApiData>(
-  response: Api.Common.BackendPagedResult<ApiData>
-): Api.Common.BackendPagedResult<ApiData> {
-return response;
 }
 
 function getColumnChecks<Column extends UI.TableColumn<any>>(

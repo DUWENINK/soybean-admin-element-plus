@@ -4,8 +4,7 @@ import useBoolean from './use-boolean';
 import useLoading from './use-loading';
 
 
-
-type GetApiData<ApiData, Pagination extends boolean> = Pagination extends true ? PaginationData<ApiData> : ApiData[];
+type GetApiData<ApiData, Pagination extends boolean> = Pagination extends true ? Api.Common.PagedResult<ApiData> : ApiData[];
 
 type Transform<ResponseData, ApiData, Pagination extends boolean> = (
   response: ResponseData
@@ -32,7 +31,7 @@ export interface UseTableOptions<ResponseData, ApiData, Column, Pagination exten
   /**
    * transform api response to table data
    */
-  transform: Transform<ResponseData, ApiData, Pagination>;
+  transform?: Transform<ResponseData, ApiData, Pagination>;
   /**
    * columns factory
    */
@@ -82,13 +81,16 @@ export default function useTable<ResponseData, ApiData, Column, Pagination exten
     }));
   }
 
+
   async function getData() {
     try {
       startLoading();
 
       const response = await api();
 
-      const transformed = transform(response);
+      const applyTransform: Transform<ResponseData, ApiData, Pagination> =
+  transform ?? ((res: any) => res);
+      const transformed = applyTransform(response);
 
       data.value = getTableData(transformed, pagination);
 
@@ -120,8 +122,7 @@ function getTableData<ApiData, Pagination extends boolean>(
   pagination?: Pagination
 ) {
   if (pagination) {
-    return (data as PaginationData<ApiData>).data;
+    return (data as Api.Common.PagedResult<ApiData>).data;
   }
-
   return data as ApiData[];
 }

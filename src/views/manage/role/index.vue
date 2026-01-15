@@ -12,24 +12,26 @@ const searchParams = ref(getInitSearchParams());
 
 function getInitSearchParams(): Api.SystemManage.RoleSearchParams {
   return {
-    current: 1,
-    size: 10,
-    status: undefined,
-    roleName: undefined,
-    roleCode: undefined
+    currentPage: 1,
+    pageSize: 10,
+    search: {
+      status: undefined,
+      roleName: undefined,
+      roleCode: undefined
+    }
   };
 }
 
 const { columns, columnChecks, data, loading, getData, getDataByPage, mobilePagination } = useUIPaginatedTable({
   paginationProps: {
-    currentPage: searchParams.value.current,
-    pageSize: searchParams.value.size
+    currentPage: searchParams.value.currentPage,
+    pageSize: searchParams.value.pageSize
   },
   api: () => fetchGetRoleList(searchParams.value),
   transform: response => backendPagedTransform(response),
   onPaginationParamsChange: params => {
-    searchParams.value.current = params.currentPage;
-    searchParams.value.size = params.pageSize;
+    searchParams.value.currentPage = params.currentPage;
+    searchParams.value.pageSize = params.pageSize;
   },
   columns: () => [
     { prop: 'selection', type: 'selection', width: 48 },

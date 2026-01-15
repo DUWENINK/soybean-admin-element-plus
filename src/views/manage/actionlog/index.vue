@@ -1,43 +1,33 @@
 <script setup lang="tsx">
-import { ref } from 'vue';
+import { reactive } from 'vue';
 import { ElButton, ElPopconfirm, ElTag } from 'element-plus';
-import { fetchGetActionLogList, fetchDeleteActionLog } from '@/service/api';
-import { backendPagedTransform, useTableOperate, useUIPaginatedTable } from '@/hooks/common/table';
-import { buildBackendPageRequestFromSearch } from '@/utils/request';
+import { fetchDeleteActionLog, fetchGetActionLogList } from '@/service/api';
+import { useTableOperate, useUIPaginatedTable } from '@/hooks/common/table';
 import { $t } from '@/locales';
 import ActionLogSearch from './modules/actionlog-search.vue';
 
 defineOptions({ name: 'ActionLogManage' });
 
-const searchParams = ref(getInitSearchParams());
+const pageRequest = reactive<Api.SystemManage.ActionLogPageRequest>({
+  search: {},
+  currentPage: 1,
+  pageSize: 30,
+  sortField: 'ActionTime',
+  sortType: 'desc'
+});
 
-function getInitSearchParams(): Api.SystemManage.ActionLogSearchParams {
-  return {
-    current: 1,
-    size: 30,
-    ITCode: undefined,
-    ActionUrl: undefined,
-    LogType: undefined,
-    ActionTime: undefined,
-    IP: undefined,
-    Duration: undefined
-  };
-}
-
-const { columns, columnChecks, data, getData, getDataByPage, loading, mobilePagination } = useUIPaginatedTable({
+const { columns, columnChecks, data, getData, loading, mobilePagination } = useUIPaginatedTable<
+  Api.Common.PagedResult<Api.SystemManage.ActionLog>,
+  Api.SystemManage.ActionLog
+>({
   paginationProps: {
-    currentPage: searchParams.value.current,
-    pageSize: searchParams.value.size
+    currentPage: pageRequest.currentPage,
+    pageSize: pageRequest.pageSize
   },
-  api: () => {
-    // 使用后端分页请求格式
-    const params = buildBackendPageRequestFromSearch(searchParams.value, 'ActionTime', 'desc');
-    return fetchGetActionLogList(params);
-  },
-  transform: response => backendPagedTransform(response), // 使用后端分页转换函数
+  api: () => fetchGetActionLogList(pageRequest),
   onPaginationParamsChange: params => {
-    searchParams.value.current = params.currentPage;
-    searchParams.value.size = params.pageSize;
+    pageRequest.currentPage = params.currentPage ?? pageRequest.currentPage;
+    pageRequest.pageSize = params.pageSize ?? pageRequest.pageSize;
   },
   columns: () => [
     { prop: 'selection', type: 'selection', width: 48 },
@@ -96,37 +86,29 @@ const { columns, columnChecks, data, getData, getDataByPage, loading, mobilePagi
   ]
 });
 
-const { operateType, checkedRowKeys, onBatchDeleted, onDeleted, openDrawer } = useTableOperate(data, getData);
+const { checkedRowKeys, onBatchDeleted, onDeleted } = useTableOperate(data, 'id', getData);
 
 async function handleDelete(id: string) {
-  await onDeleted(
-    async () => {
-      const result = await fetchDeleteActionLog([id]);
-      return result;
-    },
-    () => $t('common.deleteSuccess')
-  );
+  await onDeleted(async () => {
+    await fetchDeleteActionLog([id]);
+  });
 }
 
 async function handleBatchDelete() {
-  await onBatchDeleted(
-    async () => {
-      const result = await fetchDeleteActionLog(checkedRowKeys.value);
-      return result;
-    },
-    () => $t('common.deleteSuccess')
-  );
+  await onBatchDeleted(async () => {
+    await fetchDeleteActionLog(checkedRowKeys.value);
+  });
 }
 
 function handleReset() {
-  searchParams.value = getInitSearchParams();
+  pageRequest.search = {};
   getData();
 }
 </script>
 
 <template>
   <div class="min-h-500px flex-col-stretch gap-16px overflow-hidden lt-sm:overflow-auto">
-    <ActionLogSearch v-model:model="searchParams" @reset="handleReset" @search="getData" />
+    <ActionLogSearch v-model:model="pageRequest.search" @reset="handleReset" @search="getData" />
     <ElCard
       :title="$t('page.manage.actionlog.title')"
       :bordered="false"
@@ -142,7 +124,7 @@ function handleReset() {
           @delete="handleBatchDelete"
           @refresh="getData"
         >
-          <template #default="{ disabled, size }">
+          <template #default="slotProps">
             <ElButton :disabled="disabled" :size="size" @click="handleBatchDelete">
               {{ $t('common.batchDelete') }}
             </ElButton>

@@ -25,8 +25,8 @@ export function fetchGetAllRoles() {
 export function fetchGetUserList(params?: Api.SystemManage.UserSearchParams) {
   return request<Api.SystemManage.UserList>({
     url: '/systemManage/getUserList',
-    method: 'get',
-    params
+    method: 'post',
+    data: params
   });
 }
 
@@ -179,7 +179,7 @@ export function fetchSaveGenericLocalization(
 }
 
 /** get action log list - 使用后端分页格式 */
-export function fetchGetActionLogList(params?: Api.Common.BackendPageRequestParams<any>) {
+export function fetchGetActionLogList(params?: Api.Common.PageBaseFilter<any>) {
   return request<Api.SystemManage.ActionLogList>({
     url: '/api/actionLog/search',
     method: 'post',
@@ -197,7 +197,7 @@ export function fetchDeleteActionLog(ids: string[]) {
 }
 
 /** get cache list - 使用后端分页格式 */
-export function fetchGetCacheList(params?: Api.Common.BackendPageRequestParams<any>) {
+export function fetchGetCacheList(params?: Api.Common.PageBaseFilter<any>) {
   return request<Api.SystemManage.CacheList>({
     url: '/api/cacheManagement/search',
     method: 'post',

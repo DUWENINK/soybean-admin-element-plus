@@ -10,22 +10,24 @@ import { $t } from '@/locales';
 defineOptions({ name: 'ExcelPage' });
 
 const searchParams: Api.SystemManage.UserSearchParams = reactive({
-  current: 1,
-  size: 10,
-  status: undefined,
-  userName: undefined,
-  userGender: undefined,
-  nickName: undefined,
-  userPhone: undefined,
-  userEmail: undefined
+  currentPage: 1,
+  pageSize: 10,
+  search: {
+    status: undefined,
+    userName: undefined,
+    userGender: undefined,
+    nickName: undefined,
+    userPhone: undefined,
+    userEmail: undefined
+  }
 });
 
 const { columns, data, loading } = useUIPaginatedTable({
   api: () => fetchGetUserList(searchParams),
   transform: response => backendPagedTransform(response),
   onPaginationParamsChange: params => {
-    searchParams.current = params.currentPage;
-    searchParams.size = params.pageSize;
+    searchParams.currentPage = params.currentPage;
+    searchParams.pageSize = params.pageSize;
   },
   columns: () => [
     { type: 'selection', width: 48 },

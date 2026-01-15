@@ -33,18 +33,18 @@ function search() {
         <ElForm :model="model" label-position="right" :label-width="80">
           <ElRow :gutter="24">
             <ElCol :lg="6" :md="8" :sm="12">
-              <ElFormItem :label="$t('page.manage.role.roleName')" prop="roleName">
-                <ElInput v-model="model.roleName" :placeholder="$t('page.manage.role.form.roleName')" />
+              <ElFormItem :label="$t('page.manage.role.roleName')" prop="search.roleName">
+                <ElInput v-model="model.search.roleName" :placeholder="$t('page.manage.role.form.roleName')" />
               </ElFormItem>
             </ElCol>
             <ElCol :lg="6" :md="8" :sm="12">
-              <ElFormItem :label="$t('page.manage.role.roleCode')" prop="roleCode">
-                <ElInput v-model="model.roleCode" :placeholder="$t('page.manage.role.form.roleCode')" />
+              <ElFormItem :label="$t('page.manage.role.roleCode')" prop="search.roleCode">
+                <ElInput v-model="model.search.roleCode" :placeholder="$t('page.manage.role.form.roleCode')" />
               </ElFormItem>
             </ElCol>
             <ElCol :lg="6" :md="8" :sm="12">
-              <ElFormItem :label="$t('page.manage.role.roleStatus')" prop="status">
-                <ElSelect v-model="model.status" :placeholder="$t('page.manage.role.form.roleStatus')" clearable>
+              <ElFormItem :label="$t('page.manage.role.roleStatus')" prop="search.status">
+                <ElSelect v-model="model.search.status" :placeholder="$t('page.manage.role.form.roleStatus')" clearable>
                   <ElOption
                     v-for="{ label, value } in translateOptions(enableStatusOptions)"
                     :key="value"
