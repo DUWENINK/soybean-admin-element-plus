@@ -4,7 +4,7 @@ import { defineStore } from 'pinia';
 import { useBoolean } from '@sa/hooks';
 import type { CustomRoute, ElegantConstRoute, LastLevelRouteKey, RouteKey, RouteMap } from '@elegant-router/types';
 import { router } from '@/router';
-import { fetchGetUserMenus, fetchGetUserRoutes, fetchIsRouteExist } from '@/service/api';
+import { fetchGetUserMenus, fetchIsRouteExist } from '@/service/api';
 import { SetupStoreId } from '@/enum';
 import { createStaticRoutes, getAuthVueRoutes } from '@/router/routes';
 import { ROOT_ROUTE } from '@/router/routes/builtin';
@@ -107,9 +107,9 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
     }
 
     // Reload menus from backend for dynamic mode
-    const { data: menuData, error: menuError } = await fetchGetUserMenus();
+    const menuData = await fetchGetUserMenus();
 
-    if (!menuError && menuData) {
+    if (menuData) {
       // Transform menus to routes
       const routes = transformMenusToRoutes(menuData);
 
@@ -229,9 +229,9 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
   /** Init dynamic auth route */
   async function initDynamicAuthRoute() {
     // Try to fetch menus from old project API first
-    const { data: menuData, error: menuError } = await fetchGetUserMenus();
+    const menuData = await fetchGetUserMenus();
 
-    if (!menuError && menuData) {
+    if (menuData) {
       // Transform old project menus to routes
       const routes = transformMenusToRoutes(menuData);
 
@@ -253,25 +253,7 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
         handleUpdateRootRouteRedirect(defaultHome);
 
         setIsInitAuthRoute(true);
-        return;
       }
-    }
-
-    // Fallback to new project API if old API fails
-    const { data, error } = await fetchGetUserRoutes();
-
-    if (!error) {
-      const { routes, home } = data;
-
-      addAuthRoutes(routes);
-
-      handleConstantAndAuthRoutes();
-
-      setRouteHome(home);
-
-      handleUpdateRootRouteRedirect(home);
-
-      setIsInitAuthRoute(true);
     } else {
       // if fetch user routes failed, reset store
       authStore.resetStore();

@@ -1,5 +1,5 @@
 import type { AxiosResponse } from 'axios';
-import { BACKEND_ERROR_CODE, createFlatRequest, createRequest } from '@sa/axios';
+import { BACKEND_ERROR_CODE, createRequest } from '@sa/axios';
 import { useAuthStore } from '@/store/modules/auth';
 import { localStg } from '@/utils/storage';
 import { getServiceBaseURL } from '@/utils/service';
@@ -10,11 +10,11 @@ import type { RequestInstanceState } from './type';
 const isHttpProxy = import.meta.env.DEV && import.meta.env.VITE_HTTP_PROXY === 'Y';
 const { baseURL, otherBaseURL } = getServiceBaseURL(import.meta.env, isHttpProxy);
 
-export const request = createFlatRequest(
+export const request = createRequest(
   {
     baseURL,
     headers: {
-      apifoxToken: 'XL299LiMEDZ0H5h3A29PxwQXdMJqWyY2'
+     // apifoxToken: 'XL299LiMEDZ0H5h3A29PxwQXdMJqWyY2'
     }
   },
   {
@@ -23,9 +23,6 @@ export const request = createFlatRequest(
       refreshTokenPromise: null
     } as RequestInstanceState,
     transform(response: AxiosResponse<App.Service.Response<any>>) {
-      // Support backend NormalResult format: { Code, Message, Data }
-      // This is the C# backend standard response structure
-      // Support frontend standard format: { code, msg, data }
       return response.data.data;
     },
     async onRequest(config) {
@@ -37,11 +34,7 @@ export const request = createFlatRequest(
       return config;
     },
     isBackendSuccess(response) {
-      // Support backend NormalResult format: { Code, Message, Data }
-      // In C# backend, Code 200 means success
-      if ('Code' in response.data) {
-        return response.data.Code === 200;
-      }
+
       // Support frontend standard format where code is "0000" (string)
       // You can modify the `VITE_SERVICE_SUCCESS_CODE` in `.env` file
       return String(response.data.code) === import.meta.env.VITE_SERVICE_SUCCESS_CODE;
@@ -49,7 +42,7 @@ export const request = createFlatRequest(
     async onBackendFail(response, instance) {
       const authStore = useAuthStore();
       // Support both backend NormalResult format (Code) and frontend format (code)
-      const responseCode = String(response.data.Code || response.data.code);
+      const responseCode = String(response.data.code);
 
       function handleLogout() {
         authStore.resetStore();
@@ -71,7 +64,7 @@ export const request = createFlatRequest(
 
       // when the backend response code is in `modalLogoutCodes`, it means the user will be logged out by displaying a modal
       const modalLogoutCodes = import.meta.env.VITE_SERVICE_MODAL_LOGOUT_CODES?.split(',') || [];
-      const errorMessage = response.data.Message || response.data.msg;
+      const errorMessage = response.data.message;
       if (modalLogoutCodes.includes(responseCode) && !request.state.errMsgStack?.includes(errorMessage)) {
         request.state.errMsgStack = [...(request.state.errMsgStack || []), errorMessage];
 
@@ -120,8 +113,8 @@ export const request = createFlatRequest(
       if (error.code === BACKEND_ERROR_CODE) {
         // Support old project response format: { Code, Message, Data }
         const responseData = error.response?.data;
-        message = responseData?.Message || responseData?.msg || message;
-        backendErrorCode = String(responseData?.Code || responseData?.code || '');
+        message = responseData?.message || message;
+        backendErrorCode = String(responseData?.code || '');
       }
 
       // the error message is displayed in the modal
@@ -141,46 +134,46 @@ export const request = createFlatRequest(
   }
 );
 
-export const demoRequest = createRequest(
-  {
-    baseURL: otherBaseURL.demo
-  },
-  {
-    transform(response: AxiosResponse<App.Service.DemoResponse>) {
-      return response.data.result;
-    },
-    async onRequest(config) {
-      const { headers } = config;
+// export const demoRequest = createRequest(
+//   {
+//     baseURL: otherBaseURL.demo
+//   },
+//   {
+//     transform(response: AxiosResponse<App.Service.DemoResponse>) {
+//       return response.data.data;
+//     },
+//     async onRequest(config) {
+//       const { headers } = config;
 
-      // set token
-      const token = localStg.get('token');
-      const Authorization = token ? `Bearer ${token}` : null;
-      const lang = localStg.get('lang') || 'zh-CN';
-      const acceptLanguage = lang === 'zh-CN' ? 'zh-CN,zh;q=0.9' : 'en-US,en;q=0.9';
-      Object.assign(headers, { Authorization, 'accept-language': acceptLanguage });
+//       // set token
+//       const token = localStg.get('token');
+//       const Authorization = token ? `Bearer ${token}` : null;
+//       const lang = localStg.get('lang') || 'zh-CN';
+//       const acceptLanguage = lang === 'zh-CN' ? 'zh-CN,zh;q=0.9' : 'en-US,en;q=0.9';
+//       Object.assign(headers, { Authorization, 'accept-language': acceptLanguage });
 
-      return config;
-    },
-    isBackendSuccess(response) {
-      // when the backend response code is "200", it means the request is success
-      // you can change this logic by yourself
-      return response.data.status === '200';
-    },
-    async onBackendFail(_response) {
-      // when the backend response code is not "200", it means the request is fail
-      // for example: the token is expired, refresh token and retry request
-    },
-    onError(error) {
-      // when the request is fail, you can show error message
+//       return config;
+//     },
+//     isBackendSuccess(response) {
+//       // when the backend response code is "200", it means the request is success
+//       // you can change this logic by yourself
+//       return String(response.data.code) === import.meta.env.VITE_SERVICE_SUCCESS_CODE;
+//     },
+//     async onBackendFail(_response) {
+//       // when the backend response code is not "200", it means the request is fail
+//       // for example: the token is expired, refresh token and retry request
+//     },
+//     onError(error) {
+//       // when the request is fail, you can show error message
 
-      let message = error.message;
+//       let message = error.message;
 
-      // show backend error message
-      if (error.code === BACKEND_ERROR_CODE) {
-        message = error.response?.data?.message || message;
-      }
+//       // show backend error message
+//       if (error.code === BACKEND_ERROR_CODE) {
+//         message = error.response?.data?.message || message;
+//       }
 
-      window.$message?.error(message);
-    }
-  }
-);
+//       window.$message?.error(message);
+//     }
+//   }
+// );

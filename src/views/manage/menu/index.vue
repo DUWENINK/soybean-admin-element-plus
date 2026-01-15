@@ -202,7 +202,7 @@ function handleLocalizationSubmitted() {
 const allPages = ref<string[]>([]);
 
 async function getAllPages() {
-  const { data: userMenus } = await fetchGetUserMenus();
+  const userMenus = await fetchGetUserMenus();
   if (userMenus) {
     allPages.value = extractComponentsFromMenuTree(userMenus);
   }

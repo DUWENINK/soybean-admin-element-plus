@@ -36,9 +36,8 @@ async function getHome() {
 const pages = shallowRef<string[]>([]);
 
 async function getPages() {
-  const { error, data } = await fetchGetUserMenus();
-
-  if (!error && data) {
+  const data = await fetchGetUserMenus();
+  if (data) {
     pages.value = extractComponentsFromMenuTree(data);
   }
 }
