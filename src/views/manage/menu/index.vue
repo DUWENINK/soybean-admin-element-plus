@@ -93,14 +93,14 @@ async function handleNodeDrop(draggingNode: any, dropNode: any, dropType: 'befor
 
   loading.value = true;
   try {
-    const { error } = await fetchUpdateMenuOrder({
+    const success = await fetchUpdateMenuOrder({
       id: dragKey,
       targetId: dropKey,
       moveType,
       insertPosition
     });
 
-    if (!error) {
+    if (!success) {
       window.$message?.success($t('common.updateSuccess'));
       await loadMenuTree();
     }
@@ -113,8 +113,8 @@ async function handleNodeDrop(draggingNode: any, dropNode: any, dropType: 'befor
 async function loadMenuTree() {
   loading.value = true;
   try {
-    const { data, error } = await fetchGetMenuTree();
-    if (!error && data) {
+    const data = await fetchGetMenuTree();
+    if (data) {
       // Use old project data format directly
       menuData.value = Array.isArray(data) ? data : [];
     }
@@ -140,8 +140,8 @@ async function handleBatchDelete() {
 
   loading.value = true;
   try {
-    const { error } = await fetchBatchDeleteMenus(checkedRowKeys.value);
-    if (!error) {
+    const success = await fetchBatchDeleteMenus(checkedRowKeys.value);
+    if (!success) {
       window.$message?.success($t('common.deleteSuccess'));
       checkedRowKeys.value = [];
       await loadMenuTree();
@@ -154,8 +154,8 @@ async function handleBatchDelete() {
 async function handleDelete(id: string) {
   loading.value = true;
   try {
-    const { error } = await fetchDeleteMenu(id);
-    if (!error) {
+    const success = await fetchDeleteMenu(id);
+    if (!success) {
       window.$message?.success($t('common.deleteSuccess'));
       await loadMenuTree();
     }
@@ -276,8 +276,8 @@ async function handleSaveDetail() {
 
   loading.value = true;
   try {
-    const { error } = await fetchUpdateMenu(selectedMenu.value);
-    if (!error) {
+    const success = await fetchUpdateMenu(selectedMenu.value);
+    if (!success) {
       window.$message?.success($t('common.updateSuccess'));
       await loadMenuTree();
       // Update selected menu with latest data
