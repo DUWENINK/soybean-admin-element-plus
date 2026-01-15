@@ -593,7 +593,7 @@ function renderOperations(row: Api.SystemManage.Menu) {
           @selection-change="checkedRowKeys = $event.map((item: { id: any; }) => item.id)"
         >
           <ElTableColumn type="selection" width="48" />
-          <ElTableColumn prop="Id" label="ID" width="250" />
+          <ElTableColumn prop="id" label="ID" width="250" />
           <ElTableColumn :label="$t('page.manage.menu.menuType')" width="100">
             <template #default="{ row }">
               <component :is="renderMenuType(row.menuType)" />
