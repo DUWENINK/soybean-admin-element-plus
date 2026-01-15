@@ -1,25 +1,21 @@
 <script setup lang="tsx">
-import { onMounted, ref } from 'vue';
-import { ElButton, ElPopconfirm, ElTag, ElStatistic, ElRow, ElCol, ElDivider } from 'element-plus';
+import { onMounted, reactive, ref } from 'vue';
+import { ElButton, ElCol, ElDivider, ElPopconfirm, ElRow, ElStatistic, ElTag } from 'element-plus';
 import { fetchGetCacheList, fetchDeleteCache, fetchGetCacheStatistics, fetchBatchDeleteCache } from '@/service/api';
-import { backendPagedTransform, useTableOperate, useUIPaginatedTable } from '@/hooks/common/table';
-import { buildBackendPageRequestFromSearch } from '@/utils/request';
+import {  useTableOperate, useUIPaginatedTable } from '@/hooks/common/table';
 import { $t } from '@/locales';
 import CacheSearch from './modules/cache-search.vue';
 import CacheOperateDrawer from './modules/cache-operate-drawer.vue';
 
 defineOptions({ name: 'CacheManage' });
 
-const searchParams = ref(getInitSearchParams());
-
-function getInitSearchParams(): Api.SystemManage.CacheSearchParams {
-  return {
-    current: 1,
-    size: 30,
-    keywords: undefined,
-    prefix: undefined
-  };
-}
+const pageRequest = reactive<Api.SystemManage.CacheItemPageRequest>({
+  search: {},
+  currentPage: 1,
+  pageSize: 30,
+  sortField: 'key',
+  sortType: 'desc'
+});
 
 // 统计数据
 const statistics = ref<Api.SystemManage.CacheStatistics>({
@@ -38,7 +34,7 @@ async function loadStatistics() {
       statistics.value = result;
     }
   } catch (error) {
-    console.error('加载统计信息失败', error);
+     console.error($t('page.manage.cache.loadStatisticsFailed'), error);
   }
 }
 
@@ -48,23 +44,24 @@ function formatBytes(bytes: number): string {
   const k = 1024;
   const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return `${(bytes / Math.pow(k, i)).toFixed(2)} ${sizes[i]}`;
+  return `${(bytes / k ** i).toFixed(2)} ${sizes[i]}`;
 }
 
-const { columns, columnChecks, data, getData, getDataByPage, loading, mobilePagination } = useUIPaginatedTable({
+const { columns, columnChecks, data, getData, getDataByPage, loading, mobilePagination } = useUIPaginatedTable<
+  Api.SystemManage.CacheList,
+  Api.SystemManage.CacheItem
+>({
   paginationProps: {
-    currentPage: searchParams.value.current,
-    pageSize: searchParams.value.size
+    currentPage: pageRequest.currentPage,
+    pageSize: pageRequest.pageSize
   },
   api: () => {
     // 使用后端分页请求格式
-    const params = buildBackendPageRequestFromSearch(searchParams.value, 'key', 'asc');
-    return fetchGetCacheList(params);
+    return fetchGetCacheList(pageRequest);
   },
-  transform: response => backendPagedTransform(response), // 使用后端分页转换函数
   onPaginationParamsChange: params => {
-    searchParams.value.current = params.currentPage;
-    searchParams.value.size = params.pageSize;
+    pageRequest.currentPage = params.currentPage ?? pageRequest.currentPage;
+    pageRequest.pageSize = params.pageSize ?? pageRequest.pageSize;
   },
   columns: () => [
     { prop: 'selection', type: 'selection', width: 48 },
@@ -107,7 +104,7 @@ const { columns, columnChecks, data, getData, getDataByPage, loading, mobilePagi
       label: $t('page.manage.cache.size'),
       width: 100,
       align: 'right',
-      formatter: row => formatBytes(row.sizeInBytes)
+      formatter: row => formatBytes(row.sizeInBytes ?? 0)
     },
     {
       prop: 'operate',
@@ -142,29 +139,19 @@ function edit(key: string) {
 }
 
 async function handleDelete(key: string) {
-  await onDeleted(
-    async () => {
-      const result = await fetchDeleteCache(key);
-      await loadStatistics();
-      return result;
-    },
-    () => $t('common.deleteSuccess')
-  );
+  await onDeleted(async () => {
+    await fetchBatchDeleteCache([key]);
+  });
 }
 
 async function handleBatchDelete() {
-  await onBatchDeleted(
-    async () => {
-      const result = await fetchBatchDeleteCache(checkedRowKeys.value);
-      await loadStatistics();
-      return result;
-    },
-    () => $t('common.deleteSuccess')
-  );
+  await onBatchDeleted(async () => {
+    await fetchBatchDeleteCache(checkedRowKeys.value);
+  });
 }
 
 function handleReset() {
-  searchParams.value = getInitSearchParams();
+  pageRequest.search = {};
   getData();
 }
 
@@ -205,8 +192,8 @@ onMounted(() => {
       </ElRow>
     </ElCard>
 
-    <CacheSearch v-model:model="searchParams" @reset="handleReset" @search="getData" />
-    <ElCard :title="$t('page.manage.cache.title')" :bordered="false" size="small" class="sm:flex-1-hidden card-wrapper">
+    <CacheSearch v-model:model="pageRequest.search" @reset="handleReset" @search="getData" />
+    <ElCard :title="$t('page.manage.cache.title')" :bordered="false" size="small" class="card-wrapper sm:flex-1-hidden">
       <template #header-extra>
         <TableHeaderOperation
           v-model:columns="columnChecks"
@@ -217,18 +204,29 @@ onMounted(() => {
           @refresh="handleRefresh"
         />
       </template>
-      <UIPaginatedTable
-        v-model:checked-row-keys="checkedRowKeys"
-        :columns="columns"
-        :data="data"
-        :loading="loading"
-        :pagination="mobilePagination"
-      />
-      <CacheOperateDrawer
-        v-model:visible="drawerVisible"
-        :operate-type="operateType"
-        @submitted="getData"
-      />
+      <div class="h-[calc(100%-50px)]">
+        <ElTable
+          v-loading="loading"
+          height="100%"
+          border
+          class="sm:h-full"
+          :data="data"
+          row-key="key"
+          @selection-change="checkedRowKeys = $event"
+        >
+          <ElTableColumn v-for="col in columns" :key="col.prop" v-bind="col" />
+        </ElTable>
+      </div>
+      <div class="mt-20px flex justify-end">
+        <ElPagination
+          v-if="mobilePagination.total"
+          layout="total,prev,pager,next,sizes"
+          v-bind="mobilePagination"
+          @current-change="mobilePagination['current-change']"
+          @size-change="mobilePagination['size-change']"
+        />
+      </div>
+      <CacheOperateDrawer v-model:visible="drawerVisible" :operate-type="operateType" @submitted="getData" />
     </ElCard>
   </div>
 </template>

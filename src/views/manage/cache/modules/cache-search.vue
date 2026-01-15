@@ -3,18 +3,18 @@ import { $t } from '@/locales';
 
 defineOptions({ name: 'CacheSearch' });
 
-interface Props {
-  model: Api.SystemManage.CacheSearchParams;
-}
+// interface Props {
+//   model: Api.SystemManage.CacheSearchParams;
+// }
 
-const props = defineProps<Props>();
+// const props = defineProps<Props>();
 
 const emit = defineEmits<{
   reset: [];
   search: [];
 }>();
 
-const model = defineModel<Api.SystemManage.CacheSearchParams>('model', { required: true });
+const model = defineModel<Api.SystemManage.CacheItemSearch>('model', { required: true });
 
 function reset() {
   emit('reset');
@@ -31,11 +31,7 @@ function search() {
       <ElRow :gutter="16">
         <ElCol :span="6">
           <ElFormItem :label="$t('page.manage.cache.keywords')">
-            <ElInput
-              v-model="model.keywords"
-              :placeholder="$t('page.manage.cache.keywordsPlaceholder')"
-              clearable
-            />
+            <ElInput v-model="model.keywords" :placeholder="$t('page.manage.cache.keywordsPlaceholder')" clearable />
           </ElFormItem>
         </ElCol>
         <ElCol :span="6">

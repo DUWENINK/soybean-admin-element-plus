@@ -214,7 +214,9 @@ export function fetchGetCacheStatistics() {
 }
 
 /** add cache */
-export function fetchAddCache(data: Omit<Api.SystemManage.CacheItem, 'hits' | 'misses' | 'sizeInBytes' | 'latestValue' | 'expirationTime'>) {
+export function fetchAddCache(
+  data: Omit<Api.SystemManage.CacheItem, 'hits' | 'misses' | 'sizeInBytes' | 'latestValue' | 'expirationTime'>
+) {
   return request<boolean>({
     url: '/api/CacheManagement/item',
     method: 'post',
@@ -223,19 +225,13 @@ export function fetchAddCache(data: Omit<Api.SystemManage.CacheItem, 'hits' | 'm
 }
 
 /** update cache */
-export function fetchUpdateCache(data: Omit<Api.SystemManage.CacheItem, 'hits' | 'misses' | 'sizeInBytes' | 'latestValue' | 'expirationTime'>) {
+export function fetchUpdateCache(
+  data: Omit<Api.SystemManage.CacheItem, 'hits' | 'misses' | 'sizeInBytes' | 'latestValue' | 'expirationTime'>
+) {
   return request<boolean>({
     url: '/api/CacheManagement/item',
     method: 'put',
     data
-  });
-}
-
-/** delete cache */
-export function fetchDeleteCache(key: string) {
-  return request<boolean>({
-    url: `/api/CacheManagement/item/${encodeURIComponent(key)}`,
-    method: 'delete'
   });
 }
 

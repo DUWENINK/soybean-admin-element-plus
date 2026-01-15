@@ -200,22 +200,17 @@ declare namespace Api {
 
     /** action log search params */
     type ActionLogSearch = Partial<
-      Pick<ActionLog, 'logType' | 'moduleName' | 'actionName' | 'itCode' | 'actionUrl' | 'actionTime'>
+      Pick<ActionLog, 'logType' | 'moduleName' | 'actionName' | 'itCode' | 'actionUrl' | 'actionTime' | 'ip'>
     >;
 
     /** action log page request */
     type ActionLogPageRequest = Common.PageBaseFilter<ActionLogSearch>;
 
-
-
-
     /** action log list  */
     type ActionLogList = Common.PagedResult<ActionLog>;
 
-
-
     /** cache item */
-    type CacheItem = {
+    type CacheItem = Common.CommonRecord<{
       /** cache key */
       key: string;
       /** cache value */
@@ -238,14 +233,13 @@ declare namespace Api {
       lastAccessTime?: string;
       /** size in bytes */
       sizeInBytes?: number;
-    };
+    }>;
 
-    /** cache search params */
-    type CacheSearchParams = CommonType.RecordNullable<{
-      keywords?: string;
-      prefix?: string;
-    }> &
-      CommonSearchParams;
+    /** action log search params */
+    type CacheItemSearch = Partial<Pick<CacheItem, 'key' | 'valueType'> & { prefix: string } & { keywords: string }>;
+
+    /** action log page request */
+    type CacheItemPageRequest = Common.PageBaseFilter<CacheItemSearch>;
 
     /** cache list - 使用后端分页格式 */
     type CacheList = Common.PagedResult<CacheItem>;

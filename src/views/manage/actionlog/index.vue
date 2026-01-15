@@ -17,7 +17,7 @@ const pageRequest = reactive<Api.SystemManage.ActionLogPageRequest>({
 });
 
 const { columns, columnChecks, data, getData, loading, mobilePagination } = useUIPaginatedTable<
-  Api.Common.PagedResult<Api.SystemManage.ActionLog>,
+  Api.SystemManage.ActionLogList,
   Api.SystemManage.ActionLog
 >({
   paginationProps: {
@@ -53,7 +53,7 @@ const { columns, columnChecks, data, getData, loading, mobilePagination } = useU
     },
     { prop: 'moduleName', label: $t('page.manage.actionlog.moduleName'), minWidth: 120 },
     { prop: 'actionName', label: $t('page.manage.actionlog.actionName'), minWidth: 120 },
-    { prop: 'iTCode', label: $t('page.manage.actionlog.account'), width: 100 },
+    { prop: 'itCode', label: $t('page.manage.actionlog.account'), width: 100 },
     { prop: 'actionUrl', label: $t('page.manage.actionlog.url'), minWidth: 200 },
     { prop: 'actionTime', label: $t('page.manage.actionlog.actionTime'), width: 180 },
     {
@@ -113,7 +113,7 @@ function handleReset() {
       :title="$t('page.manage.actionlog.title')"
       :bordered="false"
       size="small"
-      class="sm:flex-1-hidden card-wrapper"
+      class="card-wrapper sm:flex-1-hidden"
     >
       <template #header-extra>
         <TableHeaderOperation
@@ -123,21 +123,30 @@ function handleReset() {
           @add="() => {}"
           @delete="handleBatchDelete"
           @refresh="getData"
-        >
-          <template #default="slotProps">
-            <ElButton :disabled="disabled" :size="size" @click="handleBatchDelete">
-              {{ $t('common.batchDelete') }}
-            </ElButton>
-          </template>
-        </TableHeaderOperation>
+        />
       </template>
-      <UIPaginatedTable
-        v-model:checked-row-keys="checkedRowKeys"
-        :columns="columns"
-        :data="data"
-        :loading="loading"
-        :pagination="mobilePagination"
-      />
+      <div class="h-[calc(100%-50px)]">
+        <ElTable
+          v-loading="loading"
+          height="100%"
+          border
+          class="sm:h-full"
+          :data="data"
+          row-key="id"
+          @selection-change="checkedRowKeys = $event"
+        >
+          <ElTableColumn v-for="col in columns" :key="col.prop" v-bind="col" />
+        </ElTable>
+      </div>
+      <div class="mt-20px flex justify-end">
+        <ElPagination
+          v-if="mobilePagination.total"
+          layout="total,prev,pager,next,sizes"
+          v-bind="mobilePagination"
+          @current-change="mobilePagination['current-change']"
+          @size-change="mobilePagination['size-change']"
+        />
+      </div>
     </ElCard>
   </div>
 </template>

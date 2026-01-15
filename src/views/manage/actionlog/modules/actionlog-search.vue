@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import { computed } from 'vue';
 import { $t } from '@/locales';
 
 defineOptions({ name: 'ActionLogSearch' });
 
-interface Props {
-  model: Api.SystemManage.ActionLogSearch;
-}
+// interface Props {
+//   model: Api.SystemManage.ActionLogSearch;
+// }
 
-const props = defineProps<Props>();
+// const props = defineProps<Props>();
 
 const emit = defineEmits<{
   reset: [];
@@ -34,27 +33,41 @@ function search() {
           <ElRow :gutter="24">
             <ElCol :span="6">
               <ElFormItem :label="$t('page.manage.actionlog.account')">
-                <ElInput v-model="model.ITCode" :placeholder="$t('page.manage.actionlog.accountPlaceholder')"
-                  clearable />
+                <ElInput
+                  v-model="model.itCode"
+                  :placeholder="$t('page.manage.actionlog.accountPlaceholder')"
+                  clearable
+                />
               </ElFormItem>
             </ElCol>
             <ElCol :span="6">
               <ElFormItem :label="$t('page.manage.actionlog.url')">
-                <ElInput v-model="model.ActionUrl" :placeholder="$t('page.manage.actionlog.urlPlaceholder')"
-                  clearable />
+                <ElInput
+                  v-model="model.actionUrl"
+                  :placeholder="$t('page.manage.actionlog.urlPlaceholder')"
+                  clearable
+                />
               </ElFormItem>
             </ElCol>
             <ElCol :span="6">
               <ElFormItem :label="$t('page.manage.actionlog.ip')">
-                <ElInput v-model="model.IP" :placeholder="$t('page.manage.actionlog.ipPlaceholder')" clearable />
+                <ElInput v-model="model.ip" :placeholder="$t('page.manage.actionlog.ipPlaceholder')" clearable />
               </ElFormItem>
             </ElCol>
 
             <ElCol :span="12">
               <ElFormItem :label="$t('page.manage.actionlog.actionTime')">
-                <ElDatePicker v-model="model.ActionTime" type="datetimerange" :range-separator="$t('common.to')"
-                  :start-placeholder="$t('common.startDate')" :end-placeholder="$t('common.endDate')"
-                  value-format="YYYY-MM-DDTHH:mm:ssZ" format="YYYY-MM-DD HH:mm:ss" class="w-full" clearable :shortcuts="[
+                <ElDatePicker
+                  v-model="model.actionTime"
+                  type="datetimerange"
+                  :range-separator="$t('common.to')"
+                  :start-placeholder="$t('common.startDate')"
+                  :end-placeholder="$t('common.endDate')"
+                  value-format="YYYY-MM-DDTHH:mm:ssZ"
+                  format="YYYY-MM-DD HH:mm:ss"
+                  class="w-full"
+                  clearable
+                  :shortcuts="[
                     {
                       text: $t('page.manage.actionlog.lastHour'),
                       value: () => {
