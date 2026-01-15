@@ -5,22 +5,18 @@
  */
 declare namespace Api {
   namespace Common {
-    /**
+
+  /**
      * 后端分页响应 PagedResult<T>
      * 与请求参数字段名保持一致
      */
-    interface BackendPagedResult<T = any> {
-      /** 总记录数 */
-      records: number;
-      /** 当前页的所有项 */
-      datas: T[];
-      /** 当前页码 */
-      current: number;
-      /** 每页记录数 */
-      size: number;
-      /** 页总数 */
-      totalPage: number;
-    }
+   interface BackendPagedResult<T> {
+  data: T[];
+  pageNum: number;
+  pageSize: number;
+  total: number;
+}
+
 
     /**
      * 后端分页请求参数 PageBaseFilter<T>

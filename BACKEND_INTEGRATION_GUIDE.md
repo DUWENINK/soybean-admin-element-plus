@@ -687,7 +687,7 @@ transform: backendPagedTransform  // 明确使用后端转换
 
 ❌ **不推荐：**
 ```typescript
-transform: defaultTransform  // 可能导致字段映射错误
+transform: backendPagedTransform  // 可能导致字段映射错误
 ```
 
 ### 3. 类型安全
@@ -714,7 +714,7 @@ type ActionLogList = any;
 transform: backendPagedTransform
 
 // ❌ 错误（字段名不匹配）
-transform: defaultTransform
+transform: backendPagedTransform
 ```
 
 ### Q2: 总记录数显示不正确？

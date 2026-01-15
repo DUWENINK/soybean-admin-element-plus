@@ -214,7 +214,7 @@ export function backendPagedTransform<ApiData>(
  * @deprecated 已废弃，请使用 backendPagedTransform 函数适配后端 PagedResult 格式
  * 此函数仅用于兼容旧的前端格式，新代码应使用后端格式
  */
-export function defaultTransform<ApiData>(
+export function backendPagedTransform<ApiData>(
   response: FlatResponseData<any, any>
 ): PaginationData<ApiData> {
   // ... 兼容旧格式的代码
@@ -431,7 +431,7 @@ UIPaginatedTable 组件
 
 2. **工具函数层**
    - ✅ 新增 `backendPagedTransform` 转换函数
-   - ⚠️ 保留但废弃 `defaultTransform`（标记 @deprecated）
+   - ⚠️ 保留但废弃 `backendPagedTransform`（标记 @deprecated）
    - ✅ 新增请求参数构建工具
 
 3. **拦截器层**
@@ -546,7 +546,7 @@ const { columns, data, loading, pagination } = useUIPaginatedTable({
 ### 2. 清理废弃代码（建议延后）
 在确保所有页面都迁移完成后，可以考虑：
 - [ ] 完全移除 `PaginatingQueryRecord` 类型定义
-- [ ] 移除 `defaultTransform` 函数
+- [ ] 移除 `backendPagedTransform` 函数
 - [ ] 更新所有相关注释
 
 ### 3. 性能优化

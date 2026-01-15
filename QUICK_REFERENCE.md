@@ -81,7 +81,7 @@ const search = extractSearchParams(searchParams.value);
 
 ### ❌ 错误1：使用了错误的转换函数
 ```typescript
-transform: defaultTransform  // ❌ 字段不匹配
+transform: backendPagedTransform  // ❌ 字段不匹配
 ```
 ✅ **正确：**
 ```typescript

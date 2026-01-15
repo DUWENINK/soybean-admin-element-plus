@@ -184,7 +184,7 @@ api: () => fetchGetCacheList(searchParams.value)
 }
 
 // 转换
-transform: response => defaultTransform(response)
+transform: response => backendPagedTransform(response)
 ```
 
 ### 改造后（后端格式）

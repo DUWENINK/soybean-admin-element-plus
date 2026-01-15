@@ -3,12 +3,7 @@ import type { Ref, VNodeChild } from 'vue';
 import useBoolean from './use-boolean';
 import useLoading from './use-loading';
 
-export interface PaginationData<T> {
-  data: T[];
-  pageNum: number;
-  pageSize: number;
-  total: number;
-}
+
 
 type GetApiData<ApiData, Pagination extends boolean> = Pagination extends true ? PaginationData<ApiData> : ApiData[];
 

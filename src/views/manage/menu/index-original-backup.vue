@@ -6,7 +6,7 @@ import { useBoolean } from '@sa/hooks';
 import { yesOrNoRecord } from '@/constants/common';
 import { enableStatusRecord, menuTypeRecord } from '@/constants/business';
 import { fetchGetAllPages, fetchGetMenuList } from '@/service/api';
-import { backendPagedTransform, defaultTransform, useTableOperate, useUIPaginatedTable } from '@/hooks/common/table';
+import { backendPagedTransform, backendPagedTransform, useTableOperate, useUIPaginatedTable } from '@/hooks/common/table';
 import { $t } from '@/locales';
 import SvgIcon from '@/components/custom/svg-icon.vue';
 import MenuOperateModal, { type OperateType } from './modules/menu-operate-modal.vue';

@@ -268,7 +268,7 @@ export function useTableOperate<TableData>(
 //  * @deprecated 已废弃，请使用 backendPagedTransform 函数适配后端 PagedResult 格式
 //  * 此函数仅用于兼容旧的前端格式，新代码应使用后端格式
 //  */
-// export function defaultTransform<ApiData>(
+// export function backendPagedTransform<ApiData>(
 //   response: FlatResponseData<any, any>
 // ): PaginationData<ApiData> {
 //   const { data, error } = response;
@@ -300,8 +300,8 @@ export function useTableOperate<TableData>(
  */
 export function backendPagedTransform<ApiData>(
   response: Api.Common.BackendPagedResult<ApiData>
-): PaginationData<ApiData> {
-  return response;
+): Api.Common.BackendPagedResult<ApiData> {
+return response;
 }
 
 function getColumnChecks<Column extends UI.TableColumn<any>>(
