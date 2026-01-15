@@ -187,7 +187,11 @@ onMounted(() => {
           />
         </ElCol>
         <ElCol :span="6">
-          <ElStatistic :title="$t('page.manage.cache.totalSize')" :value="formatBytes(statistics.totalSizeInBytes)" />
+          <ElStatistic :title="$t('page.manage.cache.totalSize')">
+            <template #default>
+              <span>{{ formatBytes(statistics.totalSizeInBytes) }}</span>
+            </template>
+          </ElStatistic>
         </ElCol>
       </ElRow>
     </ElCard>
