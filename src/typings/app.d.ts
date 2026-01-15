@@ -710,6 +710,68 @@ declare namespace App {
               requireTranslation: string;
             };
           };
+          actionlog: {
+            title: string;
+            logType: string;
+            moduleName: string;
+            actionName: string;
+            account: string;
+            accountPlaceholder: string;
+            url: string;
+            urlPlaceholder: string;
+            actionTime: string;
+            duration: string;
+            ip: string;
+            ipPlaceholder: string;
+            typeNormal: string;
+            typeException: string;
+            typeDebug: string;
+            lastHour: string;
+            today: string;
+            last7Days: string;
+          };
+          cache: {
+            title: string;
+            key: string;
+            keywords: string;
+            keywordsPlaceholder: string;
+            prefix: string;
+            prefixPlaceholder: string;
+            valueType: string;
+            valueTypeString: string;
+            valueTypeNumber: string;
+            valueTypeBoolean: string;
+            value: string;
+            latestValue: string;
+            hits: string;
+            misses: string;
+            expirationTime: string;
+            expirationSeconds: string;
+            permanent: string;
+            size: string;
+            totalKeys: string;
+            totalHits: string;
+            hitRate: string;
+            totalSize: string;
+            addCache: string;
+            editCache: string;
+            form: {
+              key: {
+                required: string;
+                placeholder: string;
+              };
+              value: {
+                required: string;
+                placeholder: string;
+              };
+              valueType: {
+                placeholder: string;
+              };
+              expirationSeconds: {
+                placeholder: string;
+              };
+            };
+          };
         };
       };
       form: {

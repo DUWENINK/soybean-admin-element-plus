@@ -18,3 +18,5 @@ interface Window {
    */
   HOST_TYPE: '0' | '1' | '2';
 }
+
+declare module 'file-size';

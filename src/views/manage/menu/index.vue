@@ -637,7 +637,7 @@ function renderOperations(row: Api.SystemManage.Menu) {
         v-model:visible="localizationEditorVisible"
         :resource-key="localizationResourceKey"
         localization-type="Menu"
-        title-prefix="$t('page.manage.menu.menuName')"
+        :title-prefix="$t('page.manage.menu.menuName')"
         @submitted="handleLocalizationSubmitted"
       />
     </ElCard>

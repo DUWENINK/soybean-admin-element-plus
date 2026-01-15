@@ -1,6 +1,7 @@
 <script setup lang="tsx">
 import { onMounted, reactive, ref } from 'vue';
 import { ElButton, ElCol, ElDivider, ElPopconfirm, ElRow, ElStatistic, ElTag } from 'element-plus';
+import filesize from 'file-size';
 import { fetchGetCacheList, fetchDeleteCache, fetchGetCacheStatistics, fetchBatchDeleteCache } from '@/service/api';
 import {  useTableOperate, useUIPaginatedTable } from '@/hooks/common/table';
 import { $t } from '@/locales';
@@ -40,11 +41,7 @@ async function loadStatistics() {
 
 // 格式化字节大小
 function formatBytes(bytes: number): string {
-  if (!bytes || bytes === 0) return '0 B';
-  const k = 1024;
-  const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return `${(bytes / k ** i).toFixed(2)} ${sizes[i]}`;
+  return filesize(bytes).human('jedec');
 }
 
 const { columns, columnChecks, data, getData, getDataByPage, loading, mobilePagination } = useUIPaginatedTable<
@@ -162,7 +159,6 @@ async function handleRefresh() {
 
 // 页面加载时初始化
 onMounted(() => {
-  getData();
   loadStatistics();
 });
 </script>
@@ -187,11 +183,11 @@ onMounted(() => {
           />
         </ElCol>
         <ElCol :span="6">
-          <ElStatistic :title="$t('page.manage.cache.totalSize')">
-            <template #default>
-              <span>{{ formatBytes(statistics.totalSizeInBytes) }}</span>
-            </template>
-          </ElStatistic>
+          <ElStatistic
+            :title="$t('page.manage.cache.totalSize')"
+            :value="statistics.totalSizeInBytes"
+            :formatter="formatBytes"
+          />
         </ElCol>
       </ElRow>
     </ElCard>
