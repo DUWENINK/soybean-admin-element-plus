@@ -13,6 +13,7 @@ const local: App.I18n.Schema = {
     backToHome: '返回首页',
     batchDelete: '批量删除',
     cancel: '取消',
+    save: '保存',
     close: '关闭',
     check: '勾选',
     expandColumn: '展开列',

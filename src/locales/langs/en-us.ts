@@ -13,6 +13,7 @@ const local: App.I18n.Schema = {
     backToHome: 'Back to home',
     batchDelete: 'Batch Delete',
     cancel: 'Cancel',
+    save: 'Save',
     close: 'Close',
     check: 'Check',
     expandColumn: 'Expand Column',

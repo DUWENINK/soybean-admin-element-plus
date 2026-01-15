@@ -12,7 +12,7 @@ interface Props {
   /** 本地化类型 */
   localizationType: Api.SystemManage.LocalizationType;
   /** 标题前缀 (可选,默认根据类型生成) */
-  titlePrefix?: string;
+  titlePrefix: string;
   /** 是否显示描述字段 */
   showDescription?: boolean;
 }
@@ -41,8 +41,13 @@ const {
   loadSupportedCultures
 } = useSupportedLocales();
 
+interface Translation {
+  culture: string;
+  value: string;
+  label: string;
+}
 
-const translations = ref<Api.SystemManage.GenericLocalizationTranslation[]>([]);
+const translations = ref<Translation[]>([]);
 const description = ref('');
 
 // 标题
@@ -89,20 +94,20 @@ async function loadTranslations() {
 
   loading.value = true;
   try {
-    const { data, error } = await fetchGetGenericLocalization(props.resourceKey, props.localizationType);
-    if (!error && data) {
+    const data = await fetchGetGenericLocalization(props.resourceKey, props.localizationType);
+    if (data) {
       // 后端字段可能是大写（PascalCase）或小写（camelCase）
-      const desc = (data as any).Description || (data as any).description || '';
+      const desc = data.description || '';
       description.value = desc;
 
       // 更新翻译值 - 后端返回数组格式: [{ culture: "zh-CN", value: "首页" }, ...]
       // 兼容大写 Translations 和小写 translations
-      const trans = (data as any).Translations || (data as any).translations;
+      const trans = data.translations;
       if (trans && Array.isArray(trans)) {
         trans.forEach((t: any) => {
           // 兼容大写 Culture/Value 和小写 culture/value
-          const cultureName = t.Culture || t.culture;
-          const translationValue = t.Value || t.value;
+          const cultureName = t.culture;
+          const translationValue = t.value;
           const translation = translations.value.find(tr => tr.culture === cultureName);
           if (translation) {
             translation.value = translationValue || '';
@@ -133,7 +138,7 @@ async function handleSave() {
       }
     });
 
-    const { error } = await fetchSaveGenericLocalization(
+    const success = await fetchSaveGenericLocalization(
       {
         key: props.resourceKey,
         description: description.value,
@@ -142,7 +147,7 @@ async function handleSave() {
       props.localizationType
     );
 
-    if (!error) {
+    if (success) {
       window.$message?.success('保存成功');
       closeModal();
       emit('submitted');
@@ -201,7 +206,6 @@ const resourceKeyHint = computed(() => {
             <span>翻译内容</span>
           </div>
         </ElDivider>
-        <pre>{{ translations }} </pre>
         <ElFormItem
           v-for="translation in translations"
           :key="translation.culture"

@@ -306,6 +306,7 @@ declare namespace App {
         backToHome: string;
         batchDelete: string;
         cancel: string;
+        save: string;
         close: string;
         check: string;
         expandColumn: string;
@@ -337,6 +338,9 @@ declare namespace App {
         update: string;
         updateSuccess: string;
         userCenter: string;
+        to: string;
+        startDate: string;
+        endDate: string;
         yesOrNo: {
           yes: string;
           no: string;
