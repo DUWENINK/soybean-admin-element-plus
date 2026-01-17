@@ -40,7 +40,7 @@ const { columns, columnChecks, data, getData, loading, mobilePagination } = useU
       prop: 'type',
       label: '应用类型',
       width: 100,
-      formatter: row => <SystemEnumTag enum-name="WechatAppType" value={row.type} />
+      formatter: row => <SystemEnumTag enumName="WechatAppType" value={row.type} />
     },
     {
       prop: 'isActive',

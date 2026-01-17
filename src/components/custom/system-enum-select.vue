@@ -1,29 +1,38 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { fetchGetSelectList } from '@/service/api';
+import { useEnumStore } from '@/store/modules/enum';
 
 defineOptions({ name: 'SystemEnumSelect' });
 
 interface Props {
+  modelValue?: string | number;
   enumName: string;
   placeholder?: string;
   clearable?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  placeholder: '',
+  modelValue: undefined,
+  placeholder: '请选择',
   clearable: true
 });
 
-const modelValue = defineModel<string | number | undefined>('modelValue');
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: string | number | undefined): void;
+}>();
 
+const enumStore = useEnumStore();
 const options = ref<CommonType.Option[]>([]);
 
 async function getOptions() {
-  const data = await fetchGetSelectList(props.enumName);
+  const data = await enumStore.getEnumOptions(props.enumName);
   if (data) {
     options.value = data;
   }
+}
+
+function handleChange(val: string | number | undefined) {
+  emit('update:modelValue', val);
 }
 
 onMounted(() => {
@@ -32,7 +41,12 @@ onMounted(() => {
 </script>
 
 <template>
-  <ElSelect v-model="modelValue" :placeholder="placeholder" :clearable="clearable">
+  <ElSelect
+    :model-value="modelValue"
+    :placeholder="placeholder"
+    :clearable="clearable"
+    @update:model-value="handleChange"
+  >
     <ElOption v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
   </ElSelect>
 </template>

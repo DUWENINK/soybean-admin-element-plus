@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 import { ElTag } from 'element-plus';
-import { fetchGetSelectList } from '@/service/api';
+import { useEnumStore } from '@/store/modules/enum';
 
 defineOptions({ name: 'SystemEnumTag' });
 
@@ -12,6 +12,7 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+const enumStore = useEnumStore();
 
 const label = ref<string>('');
 const tagType = ref<UI.ThemeColor>('primary'); // 默认为 primary
@@ -20,11 +21,10 @@ const tagType = ref<UI.ThemeColor>('primary'); // 默认为 primary
 const defaultColors: UI.ThemeColor[] = ['primary', 'success', 'warning', 'danger', 'info'];
 
 async function getEnumLabel() {
-  const data = await fetchGetSelectList(props.enumName);
+  const data = await enumStore.getEnumOptions(props.enumName);
   if (data) {
-    const item = data.find((opt: any) => {
-      // 宽松比较，处理字符串/数字差异
-      return String(opt.key) === String(props.value);
+    const item = data.find(opt => {
+      return String(opt.value) === String(props.value);
     });
 
     if (item) {
