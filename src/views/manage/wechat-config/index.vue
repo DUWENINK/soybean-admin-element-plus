@@ -1,9 +1,10 @@
 <script setup lang="tsx">
 import { reactive } from 'vue';
 import { ElButton, ElPopconfirm, ElTag } from 'element-plus';
-import { fetchDeleteWechatAppConfig, fetchGetWechatAppConfigList } from '@/service/api';
+import { fetchDeleteWechatAppConfig, fetchGetWechatAppConfig, fetchGetWechatAppConfigList } from '@/service/api';
 import { useTableOperate, useUIPaginatedTable } from '@/hooks/common/table';
 import { $t } from '@/locales';
+import SystemEnumTag from '@/components/custom/system-enum-tag.vue';
 import WechatAppConfigSearch from './modules/wechat-config-search.vue';
 import WechatAppConfigOperateDrawer from './modules/wechat-config-operate-drawer.vue';
 
@@ -38,20 +39,8 @@ const { columns, columnChecks, data, getData, loading, mobilePagination } = useU
     {
       prop: 'type',
       label: '应用类型',
-      width: 100
-      // formatter: row => {
-      //   const typeMap: Record<number, string> = {
-      //     0: '公众号',
-      //     1: '小程序',
-      //     2: '企业微信'
-      //   };
-      //   const colorMap: Record<number, UI.ThemeColor> = {
-      //     0: 'success',
-      //     1: 'primary',
-      //     2: 'warning'
-      //   };
-      //   return <ElTag type={colorMap[row.type]}>{typeMap[row.type] || row.type}</ElTag>;
-      // }
+      width: 100,
+      formatter: row => <SystemEnumTag enum-name="WechatAppType" value={row.type} />
     },
     {
       prop: 'isActive',
@@ -84,13 +73,22 @@ const { columns, columnChecks, data, getData, loading, mobilePagination } = useU
   ]
 });
 
-const { checkedRowKeys, onBatchDeleted, onDeleted, handleAdd, handleEdit, drawerVisible, operateType, editingData } =
+const { checkedRowKeys, onBatchDeleted, onDeleted, handleAdd, drawerVisible, operateType, editingData } =
   useTableOperate(data, 'id', getData);
 
 async function handleDelete(id: string) {
   await onDeleted(async () => {
     await fetchDeleteWechatAppConfig([id]);
   });
+}
+
+async function handleEdit(row: Api.SystemManage.WechatAppConfig) {
+  operateType.value = 'edit';
+  const editData = await fetchGetWechatAppConfig(row.id);
+  if (editData) {
+    editingData.value = editData;
+    drawerVisible.value = true;
+  }
 }
 
 async function handleBatchDelete() {

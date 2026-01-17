@@ -279,3 +279,11 @@ export function fetchDeleteWechatAppConfig(ids: string[]) {
     data: ids
   });
 }
+
+/** get wechat app config detail */
+export function fetchGetWechatAppConfig(id: string) {
+  return request<Api.SystemManage.WechatAppConfig>({
+    url: `/api/WechatAppConfig/Get/${id}`,
+    method: 'get'
+  });
+}
