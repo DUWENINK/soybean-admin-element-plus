@@ -10,6 +10,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     AppProvider: typeof import('./../components/common/app-provider.vue')['default']
     BetterScroll: typeof import('./../components/custom/better-scroll.vue')['default']
+    BooleanTag: typeof import('../components/custom/status-tag.vue')['default']
     ButtonIcon: typeof import('./../components/custom/button-icon.vue')['default']
     CountTo: typeof import('./../components/custom/count-to.vue')['default']
     CustomIconSelect: typeof import('./../components/custom/custom-icon-select.vue')['default']
@@ -102,6 +103,7 @@ declare module 'vue' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SoybeanAvatar: typeof import('./../components/custom/soybean-avatar.vue')['default']
+    StatusTag: typeof import('./../components/custom/status-tag.vue')['default']
     SvgIcon: typeof import('./../components/custom/svg-icon.vue')['default']
     SystemEnumSelect: typeof import('./../components/custom/system-enum-select.vue')['default']
     SystemEnumTag: typeof import('./../components/custom/system-enum-tag.vue')['default']

@@ -46,7 +46,7 @@ const { columns, columnChecks, data, getData, loading, mobilePagination } = useU
       prop: 'isActive',
       label: '是否启用',
       width: 100,
-      formatter: row => <ElTag type={row.isActive ? 'success' : 'danger'}>{row.isActive ? '启用' : '禁用'}</ElTag>
+      formatter: row => <StatusTag value={row.isActive} />
     },
     {
       prop: 'operate',

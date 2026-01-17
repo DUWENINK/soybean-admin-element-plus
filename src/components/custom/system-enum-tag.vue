@@ -7,8 +7,8 @@ defineOptions({ name: 'SystemEnumTag' });
 
 interface Props {
   enumName: string;
-  value: string | number;
-  typeMap?: Record<string | number, UI.ThemeColor>; // 可选：自定义颜色映射
+  value: string;
+  typeMap?: Record<string, UI.ThemeColor>; // 可选：自定义颜色映射
 }
 
 const props = defineProps<Props>();
@@ -24,7 +24,7 @@ async function getEnumLabel() {
   const data = await enumStore.getEnumOptions(props.enumName);
   if (data) {
     const item = data.find(opt => {
-      return String(opt.value) === String(props.value);
+      return String(opt.value) === props.value;
     });
 
     if (item) {

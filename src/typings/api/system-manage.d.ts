@@ -58,7 +58,10 @@ declare namespace Api {
       userRoles: string[];
     }>;
     /** user search params */
-    type UserSearch = Pick<Api.SystemManage.User, 'userName' | 'userGender' | 'nickName' | 'userPhone' | 'userEmail' | 'status'>;
+    type UserSearch = Pick<
+      Api.SystemManage.User,
+      'userName' | 'userGender' | 'nickName' | 'userPhone' | 'userEmail' | 'status'
+    >;
 
     /** user search params */
     type UserSearchParams = Common.PageBaseFilter<UserSearch>;
@@ -270,7 +273,6 @@ declare namespace Api {
       isVerified: boolean;
     };
 
-
     /** save menu localization params */
     type SaveMenuLocalizationParams = {
       /** resource key */
@@ -333,15 +335,13 @@ declare namespace Api {
       /** encoding aes key */
       encodingAESKey?: string;
       /** app type: 0-OfficialAccount, 1-MiniProgram, 2-Work */
-      type: number;
+      type: string;
       /** is active */
       isActive: boolean;
     }>;
 
     /** Wechat App Config search params */
-    type WechatAppConfigSearch = Partial<
-      Pick<WechatAppConfig, 'name' | 'appId' | 'type' | 'isActive'>
-    >;
+    type WechatAppConfigSearch = Partial<Pick<WechatAppConfig, 'name' | 'appId' | 'type' | 'isActive'>>;
 
     /** Wechat App Config page request */
     type WechatAppConfigPageRequest = Common.PageBaseFilter<WechatAppConfigSearch>;
