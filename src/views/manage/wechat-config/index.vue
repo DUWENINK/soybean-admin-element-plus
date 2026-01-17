@@ -5,6 +5,7 @@ import { fetchDeleteWechatAppConfig, fetchGetWechatAppConfig, fetchGetWechatAppC
 import { useTableOperate, useUIPaginatedTable } from '@/hooks/common/table';
 import { $t } from '@/locales';
 import SystemEnumTag from '@/components/custom/system-enum-tag.vue';
+import StatusTag from '@/components/custom/status-tag.vue';
 import WechatAppConfigSearch from './modules/wechat-config-search.vue';
 import WechatAppConfigOperateDrawer from './modules/wechat-config-operate-drawer.vue';
 
