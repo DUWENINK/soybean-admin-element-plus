@@ -48,7 +48,7 @@ function createDefaultModel(): Model {
     appSecret: '',
     token: '',
     encodingAESKey: '',
-    type: 0,
+    type: undefined,
     isActive: true
   };
 }
@@ -74,7 +74,7 @@ function closeDrawer() {
 
 async function handleSubmit() {
   await validate();
-  
+
   const func = props.operateType === 'add' ? fetchAddWechatAppConfig : fetchUpdateWechatAppConfig;
   const { error } = await func(model.value);
 
@@ -112,7 +112,7 @@ watch(visible, () => {
         <ElInput v-model="model.encodingAESKey" placeholder="请输入EncodingAESKey" />
       </ElFormItem>
       <ElFormItem label="应用类型" prop="type">
-        <SystemEnumSelect v-model="model.type" enum-name="WechatAppType" placeholder="请选择应用类型" />
+        <SystemEnumSelect v-model="model.type" enum-name="WechatAppType" placeholder="请选择应用类型" value-type="number" />
       </ElFormItem>
       <ElFormItem label="是否启用" prop="isActive">
         <ElSwitch v-model="model.isActive" />

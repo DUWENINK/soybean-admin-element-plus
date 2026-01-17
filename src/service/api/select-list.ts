@@ -6,7 +6,7 @@ import { request } from '../request';
  * @param typeName enum type name
  */
 export function fetchGetSelectList(typeName: string) {
-  return request<CommonType.Option[]>({
+  return request<CommonType.Option<string | number>[]>({
     url: '/api/selectlist/SelectListByTypeName',
     method: 'get',
     params: { typeName }

@@ -38,7 +38,12 @@ function search() {
             </ElCol>
             <ElCol :span="6">
               <ElFormItem label="应用类型">
-                <SystemEnumSelect v-model="model.type" enum-name="WechatAppType" placeholder="请选择应用类型" />
+                <SystemEnumSelect
+                  v-model="model.type"
+                  enum-name="WechatAppType"
+                  placeholder="请选择应用类型"
+                  value-type="number"
+                />
               </ElFormItem>
             </ElCol>
             <ElCol :span="6">

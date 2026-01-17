@@ -38,20 +38,20 @@ const { columns, columnChecks, data, getData, loading, mobilePagination } = useU
     {
       prop: 'type',
       label: '应用类型',
-      width: 100,
-      formatter: row => {
-        const typeMap: Record<number, string> = {
-          0: '公众号',
-          1: '小程序',
-          2: '企业微信'
-        };
-        const colorMap: Record<number, UI.ThemeColor> = {
-          0: 'success',
-          1: 'primary',
-          2: 'warning'
-        };
-        return <ElTag type={colorMap[row.type]}>{typeMap[row.type] || row.type}</ElTag>;
-      }
+      width: 100
+      // formatter: row => {
+      //   const typeMap: Record<number, string> = {
+      //     0: '公众号',
+      //     1: '小程序',
+      //     2: '企业微信'
+      //   };
+      //   const colorMap: Record<number, UI.ThemeColor> = {
+      //     0: 'success',
+      //     1: 'primary',
+      //     2: 'warning'
+      //   };
+      //   return <ElTag type={colorMap[row.type]}>{typeMap[row.type] || row.type}</ElTag>;
+      // }
     },
     {
       prop: 'isActive',
