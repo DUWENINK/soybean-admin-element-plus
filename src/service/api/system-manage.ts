@@ -243,3 +243,39 @@ export function fetchBatchDeleteCache(keys: string[]) {
     data: { keys }
   });
 }
+
+/** get wechat app config list */
+export function fetchGetWechatAppConfigList(params?: Api.SystemManage.WechatAppConfigPageRequest) {
+  return request<Api.SystemManage.WechatAppConfigList>({
+    url: '/api/WechatAppConfig/Search',
+    method: 'post',
+    data: params
+  });
+}
+
+/** add wechat app config */
+export function fetchAddWechatAppConfig(data: Partial<Api.SystemManage.WechatAppConfig>) {
+  return request<string>({
+    url: '/api/WechatAppConfig/Add',
+    method: 'post',
+    data
+  });
+}
+
+/** update wechat app config */
+export function fetchUpdateWechatAppConfig(data: Partial<Api.SystemManage.WechatAppConfig>) {
+  return request<string>({
+    url: '/api/WechatAppConfig/Edit',
+    method: 'post',
+    data
+  });
+}
+
+/** delete wechat app config */
+export function fetchDeleteWechatAppConfig(ids: string[]) {
+  return request<boolean>({
+    url: '/api/WechatAppConfig/BatchDelete',
+    method: 'post',
+    data: ids
+  });
+}

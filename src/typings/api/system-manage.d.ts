@@ -319,5 +319,34 @@ declare namespace Api {
       /** localization type */
       localizationType?: LocalizationType;
     };
+
+    /** Wechat App Config */
+    type WechatAppConfig = Common.CommonRecord<{
+      /** name */
+      name: string;
+      /** app id */
+      appId: string;
+      /** app secret */
+      appSecret: string;
+      /** token */
+      token?: string;
+      /** encoding aes key */
+      encodingAESKey?: string;
+      /** app type: 0-OfficialAccount, 1-MiniProgram, 2-Work */
+      type: number;
+      /** is active */
+      isActive: boolean;
+    }>;
+
+    /** Wechat App Config search params */
+    type WechatAppConfigSearch = Partial<
+      Pick<WechatAppConfig, 'name' | 'appId' | 'type' | 'isActive'>
+    >;
+
+    /** Wechat App Config page request */
+    type WechatAppConfigPageRequest = Common.PageBaseFilter<WechatAppConfigSearch>;
+
+    /** Wechat App Config list */
+    type WechatAppConfigList = Common.PagedResult<WechatAppConfig>;
   }
 }

@@ -123,6 +123,7 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     SoybeanAvatar: typeof import('./../components/custom/soybean-avatar.vue')['default']
     SvgIcon: typeof import('./../components/custom/svg-icon.vue')['default']
+    SystemEnumSelect: typeof import('./../components/custom/system-enum-select.vue')['default']
     SystemLogo: typeof import('./../components/common/system-logo.vue')['default']
     TableColumnSetting: typeof import('./../components/advanced/table-column-setting.vue')['default']
     TableHeaderOperation: typeof import('./../components/advanced/table-header-operation.vue')['default']

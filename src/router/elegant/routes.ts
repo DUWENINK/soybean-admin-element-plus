@@ -324,6 +324,15 @@ export const generatedRoutes: GeneratedRoute[] = [
           roles: ['R_ADMIN'],
           activeMenu: 'manage_user'
         }
+      },
+      {
+        name: 'manage_wechat-config',
+        path: '/manage/wechat-config',
+        component: 'view.manage_wechat-config',
+        meta: {
+          title: 'manage_wechat-config',
+          i18nKey: 'route.manage_wechat-config'
+        }
       }
     ]
   },
