@@ -64,7 +64,12 @@ watch(visible, () => {
         <ElInput v-model="model.appId" :placeholder="$t('page.manage.wechatConfig.form.appId')" />
       </ElFormItem>
       <ElFormItem :label="$t('page.manage.wechatConfig.appSecret')" prop="appSecret">
-        <ElInput v-model="model.appSecret" :placeholder="$t('page.manage.wechatConfig.form.appSecret')" type="password" show-password />
+        <ElInput
+          v-model="model.appSecret"
+          :placeholder="$t('page.manage.wechatConfig.form.appSecret')"
+          type="password"
+          show-password
+        />
       </ElFormItem>
       <ElFormItem :label="$t('page.manage.wechatConfig.token')" prop="token">
         <ElInput v-model="model.token" :placeholder="$t('page.manage.wechatConfig.form.token')" />
