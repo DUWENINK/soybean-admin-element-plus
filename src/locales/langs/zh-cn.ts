@@ -588,6 +588,26 @@ const local: App.I18n.Schema = {
             placeholder: '留空使用默认值(3600秒)'
           }
         }
+      },
+      wechatConfig: {
+        title: '微信配置',
+        add: '新增应用配置',
+        edit: '编辑应用配置',
+        name: '应用名称',
+        appId: 'AppId',
+        appSecret: 'AppSecret',
+        token: 'Token',
+        encodingAESKey: 'EncodingAESKey',
+        type: '应用类型',
+        isActive: '是否启用',
+        form: {
+          name: '请输入应用名称',
+          appId: '请输入AppId',
+          appSecret: '请输入AppSecret',
+          token: '请输入Token',
+          encodingAESKey: '请输入EncodingAESKey',
+          type: '请选择应用类型'
+        }
       }
     }
   },

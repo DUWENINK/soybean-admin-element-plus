@@ -1,13 +1,14 @@
 <script setup lang="tsx">
 import { reactive } from 'vue';
-import { ElButton, ElPopconfirm, ElTag } from 'element-plus';
+import { ElButton, ElPopconfirm } from 'element-plus';
 import { fetchDeleteWechatAppConfig, fetchGetWechatAppConfig, fetchGetWechatAppConfigList } from '@/service/api';
 import { useTableOperate, useUIPaginatedTable } from '@/hooks/common/table';
 import { $t } from '@/locales';
 import SystemEnumTag from '@/components/custom/system-enum-tag.vue';
 import StatusTag from '@/components/custom/status-tag.vue';
 import WechatAppConfigSearch from './modules/wechat-config-search.vue';
-import WechatAppConfigOperateDrawer from './modules/wechat-config-operate-drawer.vue';
+import WechatAppConfigAddDrawer from './modules/wechat-config-add-drawer.vue';
+import WechatAppConfigEditDrawer from './modules/wechat-config-edit-drawer.vue';
 
 defineOptions({ name: 'WechatAppConfigManage' });
 
@@ -107,30 +108,31 @@ function handleReset() {
 <template>
   <div class="min-h-500px flex-col-stretch gap-16px overflow-hidden lt-sm:overflow-auto">
     <WechatAppConfigSearch v-model:model="pageRequest.search" @reset="handleReset" @search="getData" />
-    <ElCard title="微信应用配置列表" :bordered="false" size="small" class="card-wrapper sm:flex-1-hidden">
-      <template #header-extra>
-        <TableHeaderOperation
-          v-model:columns="columnChecks"
-          :disabled-delete="checkedRowKeys.length === 0"
-          :loading="loading"
-          @add="handleAdd"
-          @delete="handleBatchDelete"
-          @refresh="getData"
-        />
+    <ElCard class="card-wrapper sm:flex-1-hidden" body-class="ht50" :bordered="false" size="small">
+      <template #header>
+        <div class="flex items-center justify-between">
+          <p>微信应用配置列表</p>
+          <TableHeaderOperation
+            v-model:columns="columnChecks"
+            :disabled-delete="checkedRowKeys.length === 0"
+            :loading="loading"
+            @add="handleAdd"
+            @delete="handleBatchDelete"
+            @refresh="getData"
+          />
+        </div>
       </template>
-      <div class="h-[calc(100%-50px)]">
-        <ElTable
-          v-loading="loading"
-          height="100%"
-          border
-          class="sm:h-full"
-          :data="data"
-          row-key="id"
-          @selection-change="checkedRowKeys = $event"
-        >
-          <ElTableColumn v-for="col in columns" :key="col.prop" v-bind="col" />
-        </ElTable>
-      </div>
+      <ElTable
+        v-loading="loading"
+        height="100%"
+        border
+        class="sm:h-full"
+        :data="data"
+        row-key="id"
+        @selection-change="checkedRowKeys = $event"
+      >
+        <ElTableColumn v-for="col in columns" :key="col.prop" v-bind="col" />
+      </ElTable>
       <div class="mt-20px flex justify-end">
         <ElPagination
           v-if="mobilePagination.total"
@@ -141,13 +143,24 @@ function handleReset() {
         />
       </div>
     </ElCard>
-    <WechatAppConfigOperateDrawer
+    <WechatAppConfigAddDrawer
+      v-if="operateType === 'add'"
       v-model:visible="drawerVisible"
-      :operate-type="operateType"
-      :row-data="editingData"
+      @submitted="getData"
+    />
+    <WechatAppConfigEditDrawer
+      v-if="operateType === 'edit'"
+      v-model:visible="drawerVisible"
+      :id="editingData?.id"
       @submitted="getData"
     />
   </div>
 </template>
 
-<style scoped></style>
+<style lang="scss" scoped>
+:deep(.el-card) {
+  .ht50 {
+    height: calc(100% - 50px);
+  }
+}
+</style>

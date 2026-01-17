@@ -54,11 +54,9 @@ declare namespace Api {
      */
     type EnableStatus = '1' | '2';
 
-    /** common record */
-    type CommonRecord<T = any> = {
-      /** record id */
-      id: string;
-      /** record creator */
+    type  AuditRecord =
+    {
+       /** record creator */
       createBy: string;
       /** record create time */
       createTime: string;
@@ -70,6 +68,17 @@ declare namespace Api {
       status: EnableStatus | undefined;
       /** record remark */
       remark?: string;
-    } & T;
+    }
+
+    type BaseRecord= {
+      /** record id */
+      id: string | null;
+    };
+
+    /** common record */
+    type CommonRecord<T = any> = {
+      /** record id */
+      id: string | null;
+    } & T & AuditRecord;
   }
 }
