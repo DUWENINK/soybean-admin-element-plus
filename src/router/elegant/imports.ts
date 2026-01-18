@@ -37,6 +37,7 @@ export const views: Record<LastLevelRouteKey, RouteComponent | (() => Promise<Ro
   manage_cache: () => import("@/views/manage/cache/index.vue"),
   manage_menu: () => import("@/views/manage/menu/index.vue"),
   manage_role: () => import("@/views/manage/role/index.vue"),
+  "manage_sms-config": () => import("@/views/manage/sms-config/index.vue"),
   "manage_user-detail": () => import("@/views/manage/user-detail/[id].vue"),
   manage_user: () => import("@/views/manage/user/index.vue"),
   "manage_wechat-config": () => import("@/views/manage/wechat-config/index.vue"),

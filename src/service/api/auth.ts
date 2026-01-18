@@ -51,3 +51,14 @@ export function fetchLogout() {
     method: 'post'
   });
 }
+
+export function fetchCustomBackendError(code: string, message: string) {
+  return request<void>({
+    url: '/api/Account/CustomBackendError',
+    method: 'post',
+    data: {
+      code,
+      message
+    }
+  });
+}

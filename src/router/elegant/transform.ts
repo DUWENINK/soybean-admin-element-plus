@@ -203,6 +203,7 @@ const routeMap: RouteMap = {
   "manage_cache": "/manage/cache",
   "manage_menu": "/manage/menu",
   "manage_role": "/manage/role",
+  "manage_sms-config": "/manage/sms-config",
   "manage_user": "/manage/user",
   "manage_user-detail": "/manage/user-detail/:id",
   "manage_wechat-config": "/manage/wechat-config",

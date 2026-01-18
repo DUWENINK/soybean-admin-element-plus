@@ -301,6 +301,15 @@ export const generatedRoutes: GeneratedRoute[] = [
         }
       },
       {
+        name: 'manage_sms-config',
+        path: '/manage/sms-config',
+        component: 'view.manage_sms-config',
+        meta: {
+          title: 'manage_sms-config',
+          i18nKey: 'route.manage_sms-config'
+        }
+      },
+      {
         name: 'manage_user',
         path: '/manage/user',
         component: 'view.manage_user',

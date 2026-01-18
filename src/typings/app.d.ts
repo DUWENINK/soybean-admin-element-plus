@@ -772,6 +772,76 @@ declare namespace App {
               };
             };
           };
+          wechatConfig: {
+            title: string;
+            add: string;
+            edit: string;
+            name: string;
+            appId: string;
+            appSecret: string;
+            token: string;
+            encodingAESKey: string;
+            type: string;
+            isActive: string;
+            form: {
+              name: string;
+              appId: string;
+              appSecret: string;
+              token: string;
+              encodingAESKey: string;
+              type: string;
+            };
+          };
+          smsConfig: {
+            title: string;
+            add: string;
+            edit: string;
+            testSend: string;
+            appType: string;
+            provider: string;
+            appId: string;
+            appSecret: string;
+            signName: string;
+            sdkAppId: string;
+            templateIdMap: string;
+            testDialog: {
+              title: string;
+              appType: string;
+              phone: string;
+              purpose: string;
+              code: string;
+              send: string;
+              success: string;
+              form: {
+                appType: string;
+                phone: string;
+                purpose: string;
+                code: string;
+              };
+            };
+            templateMap: {
+              tips: string;
+              addRow: string;
+              empty: string;
+              keyPlaceholder: string;
+              valuePlaceholder: string;
+              advancedTitle: string;
+              jsonLabel: string;
+              jsonPlaceholder: string;
+              applyJson: string;
+              copyFromEditor: string;
+              invalidJson: string;
+            };
+            form: {
+              appType: string;
+              provider: string;
+              appId: string;
+              appSecret: string;
+              signName: string;
+              sdkAppId: string;
+              templateIdMap: string;
+            };
+          };
         };
       };
       form: {

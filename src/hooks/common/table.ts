@@ -71,6 +71,17 @@ export function useUITable<ResponseData, ApiData>(options: UseUITableOptions<Res
 
 type PaginationParams = Pick<PaginationProps, 'currentPage' | 'pageSize'>;
 
+export function backendPagedTransform<ApiData>(response: any): { data: ApiData[]; total: number } {
+  const data = (response?.data ?? response?.records ?? response?.list ?? []) as ApiData[];
+  const total = (response?.total ?? response?.totalCount ?? response?.count ?? 0) as number;
+
+  return {
+    ...response,
+    data,
+    total
+  };
+}
+
 type UseUIPaginatedTableOptions<ResponseData, ApiData> = UseUITableOptions<ResponseData, ApiData, true> & {
   paginationProps?: Partial<Omit<PaginationProps, 'total'>>;
   /**

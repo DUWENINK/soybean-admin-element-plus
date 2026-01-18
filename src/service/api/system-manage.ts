@@ -287,3 +287,55 @@ export function fetchGetWechatAppConfig(id: string) {
     method: 'get'
   });
 }
+
+/** get sms config list */
+export function fetchGetSmsConfigList(params?: Api.SystemManage.SmsConfigPageRequest) {
+  return request<Api.SystemManage.SmsConfigList>({
+    url: '/api/SmsConfig/Search',
+    method: 'post',
+    data: params
+  });
+}
+
+/** add sms config */
+export function fetchAddSmsConfig(data: Partial<Api.SystemManage.SmsConfig>) {
+  return request<string>({
+    url: '/api/SmsConfig/Add',
+    method: 'post',
+    data
+  });
+}
+
+/** update sms config */
+export function fetchUpdateSmsConfig(data: Partial<Api.SystemManage.SmsConfig>) {
+  return request<string>({
+    url: '/api/SmsConfig/Edit',
+    method: 'post',
+    data
+  });
+}
+
+/** delete sms config */
+export function fetchDeleteSmsConfig(ids: string[]) {
+  return request<boolean>({
+    url: '/api/SmsConfig/BatchDelete',
+    method: 'post',
+    data: ids
+  });
+}
+
+/** get sms config detail */
+export function fetchGetSmsConfig(id: string) {
+  return request<Api.SystemManage.SmsConfig>({
+    url: `/api/SmsConfig/Get/${id}`,
+    method: 'get'
+  });
+}
+
+export function fetchSendSmsTestCode(data: Api.SystemManage.SmsTestSendDto) {
+  return request<boolean>({
+    url: '/api/SmsConfig/SendTestCode',
+    method: 'post',
+    data
+  });
+}

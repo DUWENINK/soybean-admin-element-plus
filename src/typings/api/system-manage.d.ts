@@ -348,5 +348,39 @@ declare namespace Api {
 
     /** Wechat App Config list */
     type WechatAppConfigList = Common.PagedResult<WechatAppConfig>;
+
+    /** Sms Config */
+    type SmsConfig = Common.CommonRecord<{
+      /** app type */
+      appType: string;
+      /** provider type */
+      provider: string;
+      /** app id / access key id */
+      appId: string;
+      /** app secret / access key secret */
+      appSecret: string;
+      /** sign name */
+      signName: string;
+      /** template mapping json */
+      templateIdMap?: string;
+      /** sdk app id */
+      sdkAppId?: string;
+    }>;
+
+    /** Sms Config search params */
+    type SmsConfigSearch = Partial<Pick<SmsConfig, 'appType' | 'provider' | 'appId' | 'signName'>>;
+
+    /** Sms Config page request */
+    type SmsConfigPageRequest = Common.PageBaseFilter<SmsConfigSearch>;
+
+    /** Sms Config list */
+    type SmsConfigList = Common.PagedResult<SmsConfig>;
+
+    type SmsTestSendDto = {
+      phone: string;
+      appType: string | number;
+      purpose: number;
+      code?: string;
+    };
   }
 }

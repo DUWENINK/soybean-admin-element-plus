@@ -608,6 +608,56 @@ const local: App.I18n.Schema = {
           encodingAESKey: '请输入EncodingAESKey',
           type: '请选择应用类型'
         }
+      },
+      smsConfig: {
+        title: '短信配置',
+        add: '新增短信配置',
+        edit: '编辑短信配置',
+        testSend: '发送测试短信',
+        appType: '应用类型',
+        provider: '服务商',
+        appId: 'AppId/AccessKeyId',
+        appSecret: 'AppSecret/AccessKeySecret',
+        signName: '签名名称',
+        sdkAppId: 'SDK AppId',
+        templateIdMap: '模版映射(JSON)',
+        testDialog: {
+          title: '发送测试短信',
+          appType: '应用类型',
+          phone: '手机号',
+          purpose: '用途',
+          code: '指定验证码(可选)',
+          send: '发送',
+          success: '发送成功',
+          form: {
+            appType: '请选择应用类型',
+            phone: '请输入手机号',
+            purpose: '请选择用途',
+            code: '留空将随机生成6位验证码'
+          }
+        },
+        templateMap: {
+          tips: '按用途配置模版Id；将自动生成并保存为 JSON',
+          addRow: '新增一行',
+          empty: '暂无模版映射',
+          keyPlaceholder: '用途Key（如 Register）',
+          valuePlaceholder: '模版Id（如 SMS_123）',
+          advancedTitle: '高级 JSON',
+          jsonLabel: 'JSON',
+          jsonPlaceholder: '请输入 JSON，例如：{\"Register\":\"SMS_123\"}',
+          applyJson: '应用到编辑器',
+          copyFromEditor: '从编辑器回填',
+          invalidJson: 'JSON 格式不正确'
+        },
+        form: {
+          appType: '请选择应用类型',
+          provider: '请选择服务商',
+          appId: '请输入AppId/AccessKeyId',
+          appSecret: '请输入AppSecret/AccessKeySecret',
+          signName: '请输入签名名称',
+          sdkAppId: '请输入SDK AppId(腾讯云可选)',
+          templateIdMap: '请输入模版映射JSON，例如：{\"Register\": \"SMS_123\"}'
+        }
       }
     }
   },
