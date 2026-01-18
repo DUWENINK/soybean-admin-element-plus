@@ -20,14 +20,6 @@ const visible = defineModel<boolean>('visible', {
 const { formRef, validate, restoreValidation } = useForm();
 const { defaultRequiredRule } = useFormRules();
 
-type PurposeOption = { label: string; value: number };
-
-const purposeOptions: PurposeOption[] = [
-  { label: '注册', value: 0 },
-  { label: '重置密码', value: 1 },
-  { label: '修改手机号', value: 2 }
-];
-
 type Model = Api.SystemManage.SmsTestSendDto;
 
 const model = ref<Model>({
@@ -97,10 +89,12 @@ watch(
         <ElInput v-model="model.phone" :placeholder="$t('page.manage.smsConfig.testDialog.form.phone')" />
       </ElFormItem>
       <ElFormItem :label="$t('page.manage.smsConfig.testDialog.purpose')" prop="purpose">
-        <ElSelect v-model="model.purpose" :placeholder="$t('page.manage.smsConfig.testDialog.form.purpose')">
-          <ElOption v-for="opt in purposeOptions" :key="opt.value" :label="opt.label" :value="opt.value" />
-        </ElSelect>
-
+        <SystemEnumSelect
+          v-model="model.purpose"
+          enum-name="PurposeType"
+          :placeholder="$t('page.manage.smsConfig.testDialog.form.purpose')"
+          value-type="number"
+        />
       </ElFormItem>
       <ElFormItem :label="$t('page.manage.smsConfig.testDialog.code')" prop="code">
         <ElInput v-model="model.code" :placeholder="$t('page.manage.smsConfig.testDialog.form.code')" />
