@@ -382,5 +382,36 @@ declare namespace Api {
       purpose: number;
       code?: string;
     };
+
+    /** Sms Log */
+    type SmsLog = Common.CommonRecord<{
+      /** phone number */
+      phoneNumber: string;
+      /** template code */
+      templateCode: string;
+      /** content */
+      content: string;
+      /** provider type */
+      provider: string;
+      /** success status */
+      success: boolean;
+      /** return message */
+      message: string;
+      /** request id */
+      requestId: string;
+      /** client ip */
+      clientIP: string;
+      /** use purpose */
+      usePurpose: string;
+    }>;
+
+    /** Sms Log search params */
+    type SmsLogSearch = Partial<Pick<SmsLog, 'phoneNumber' | 'provider' | 'success'>>;
+
+    /** Sms Log page request */
+    type SmsLogPageRequest = Common.PageBaseFilter<SmsLogSearch>;
+
+    /** Sms Log list */
+    type SmsLogList = Common.PagedResult<SmsLog>;
   }
 }

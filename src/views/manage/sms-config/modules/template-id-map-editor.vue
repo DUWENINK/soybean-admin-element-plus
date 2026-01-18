@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
+import { fetchGetSelectList } from '@/service/api/select-list';
 import { $t } from '@/locales';
 
 type Row = {
@@ -9,33 +10,45 @@ type Row = {
 
 const modelValue = defineModel<string | undefined>('modelValue', { required: true });
 
-const defaultKeyOptions = [
-  { label: '注册', value: 'Register' },
-  { label: '重置密码', value: 'ResetPassword' },
-  { label: '修改手机号', value: 'ChangePhone' }
-];
-
 const rows = ref<Row[]>([]);
-const rawJson = ref('');
-const jsonError = ref<string | null>(null);
+const purposeOptions = ref<CommonType.Option[]>([]);
 const syncingFromOutside = ref(false);
 
-function normalizeRows(next: Row[]) {
-  const cleaned = next
-    .map(r => ({ key: (r.key ?? '').trim(), value: (r.value ?? '').trim() }))
-    .filter(r => r.key || r.value);
-
-  const seen = new Set<string>();
-  const uniq: Row[] = [];
-  for (const r of cleaned) {
-    if (!r.key) continue;
-    if (seen.has(r.key)) continue;
-    seen.add(r.key);
-    uniq.push(r);
+onMounted(async () => {
+  try {
+    const data = await fetchGetSelectList('PurposeType');
+    if (data) {
+      purposeOptions.value = data;
+    }
+  } catch (error) {
+    console.error('Failed to fetch PurposeType options', error);
   }
+});
 
-  return uniq;
+function isOptionDisabled(optionValue: string | number, rowIndex: number) {
+  const strValue = String(optionValue);
+  return rows.value.some((r, i) => i !== rowIndex && r.key === strValue);
 }
+
+// function normalizeRows(next: Row[]) {
+//   const cleaned = next
+//     .map(r => ({ key: (r.key ?? '').trim(), value: (r.value ?? '').trim() }));
+//     // Don't filter out empty ones immediately to allow editing
+
+//   // Deduplication logic handled in UI via disabled options, but good to have here too for safety
+//   const seen = new Set<string>();
+//   const uniq: Row[] = [];
+//   for (const r of cleaned) {
+//     if (r.key && seen.has(r.key)) continue; // Skip if duplicate key exists
+//     if (r.key) seen.add(r.key);
+//     uniq.push(r);
+//   }
+
+//   // If we filtered, return uniq. But for editing experience, we might want to keep the structure until save?
+//   // The original logic normalized heavily. Let's keep it simple: just map.
+//   // The UI prevents duplicates, so we just trust the UI primarily, but filter duplicates on save/json build.
+//   return cleaned;
+// }
 
 function buildJsonFromRows(nextRows: Row[]) {
   const obj: Record<string, string> = {};
@@ -52,52 +65,45 @@ function buildJsonFromRows(nextRows: Row[]) {
 
 function parseJsonToRows(text: string | undefined) {
   const input = (text ?? '').trim();
-  if (!input) return { rows: [] as Row[], error: null as string | null };
+  if (!input) return [];
 
   try {
     const parsed = JSON.parse(input) as unknown;
     if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
-      return { rows: [] as Row[], error: $t('page.manage.smsConfig.templateMap.invalidJson') };
+      return [];
     }
 
     const obj = parsed as Record<string, unknown>;
-    const nextRows = Object.entries(obj).map(([k, v]) => ({
+    return Object.entries(obj).map(([k, v]) => ({
       key: String(k),
-      value: v == null ? '' : String(v)
+      value: v === null ? '' : String(v)
     }));
-
-    return { rows: normalizeRows(nextRows), error: null };
   } catch {
-    return { rows: [], error: $t('page.manage.smsConfig.templateMap.invalidJson') };
+    return [];
   }
 }
 
 function addRow() {
-  rows.value = [...rows.value, { key: '', value: '' }];
+  rows.value.push({ key: '', value: '' });
 }
 
 function removeRow(index: number) {
-  rows.value = rows.value.filter((_, i) => i !== index);
+  rows.value.splice(index, 1);
 }
-
-function applyRawJson() {
-  const parsed = parseJsonToRows(rawJson.value);
-  jsonError.value = parsed.error;
-  if (parsed.error) return;
-
-  rows.value = parsed.rows;
-}
-
-const jsonPreview = computed(() => buildJsonFromRows(rows.value));
 
 watch(
   modelValue,
   next => {
     syncingFromOutside.value = true;
-    const parsed = parseJsonToRows(next);
-    rows.value = parsed.rows.length ? parsed.rows : rows.value.length ? rows.value : [];
-    rawJson.value = (next ?? '').trim();
-    jsonError.value = parsed.error;
+    const parsedRows = parseJsonToRows(next);
+    // Only update if different to avoid cursor jumping or resetting if we were typing?
+    // Actually, usually modelValue comes from parent. If we are editing, we emit update.
+    // We should only overwrite if the external value is significantly different and we are not editing?
+    // For now, follow original logic: overwrite if syncing.
+
+    // Simple check: if we have rows and next is empty/same, maybe don't wipe?
+    // But if parent clears it, we should clear.
+    rows.value = parsedRows;
     syncingFromOutside.value = false;
   },
   { immediate: true }
@@ -107,13 +113,12 @@ watch(
   rows,
   next => {
     if (syncingFromOutside.value) return;
-    const normalized = normalizeRows(next);
-    if (normalized.length !== next.length) rows.value = normalized;
+    // We don't auto-normalize (remove duplicates) instantly while typing,
+    // but we do generate valid JSON which naturally deduplicates keys (last one wins in JSON obj).
+    // However, our buildJsonFromRows iterates and sets keys. If duplicates exist in rows, last one overrides.
 
-    const json = buildJsonFromRows(normalized);
+    const json = buildJsonFromRows(next);
     modelValue.value = json;
-    rawJson.value = json;
-    jsonError.value = null;
   },
   { deep: true }
 );
@@ -122,48 +127,34 @@ watch(
 <template>
   <div class="flex-col gap-12px">
     <div class="flex items-center justify-between">
-      <div class="text-14px text-[var(--el-text-color-regular)]">{{ $t('page.manage.smsConfig.templateMap.tips') }}</div>
-      <ElButton type="primary" plain size="small" @click="addRow">{{ $t('page.manage.smsConfig.templateMap.addRow') }}</ElButton>
+      <div class="text---el-text-color-regular text-(14px)">{{ $t('page.manage.smsConfig.templateMap.tips') }}</div>
+      <ElButton type="primary" plain size="small" @click="addRow">
+        {{ $t('page.manage.smsConfig.templateMap.addRow') }}
+      </ElButton>
     </div>
 
     <ElEmpty v-if="rows.length === 0" :description="$t('page.manage.smsConfig.templateMap.empty')" :image-size="60" />
 
     <div v-else class="flex-col gap-8px">
-      <div v-for="(row, index) in rows" :key="index" class="flex gap-8px items-start">
-        <ElSelect
-          v-model="row.key"
-          class="w-180px"
-          filterable
-          allow-create
-          default-first-option
-          :placeholder="$t('page.manage.smsConfig.templateMap.keyPlaceholder')"
-        >
-          <ElOption v-for="opt in defaultKeyOptions" :key="opt.value" :label="opt.label" :value="opt.value" />
+      <div v-for="(row, index) in rows" :key="index" class="flex items-start gap-8px">
+        <ElSelect v-model="row.key" placeholder="请选择用途" class="w-200px" filterable>
+          <ElOption
+            v-for="item in purposeOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="String(item.value)"
+            :disabled="isOptionDisabled(item.value, index)"
+          />
         </ElSelect>
-        <ElInput v-model="row.value" class="flex-1" :placeholder="$t('page.manage.smsConfig.templateMap.valuePlaceholder')" />
+        <ElInput
+          v-model="row.value"
+          class="flex-1"
+          :placeholder="$t('page.manage.smsConfig.templateMap.valuePlaceholder')"
+        />
         <ElButton type="danger" plain size="small" @click="removeRow(index)">{{ $t('common.delete') }}</ElButton>
       </div>
     </div>
-
-    <ElCollapse>
-      <ElCollapseItem :title="$t('page.manage.smsConfig.templateMap.advancedTitle')" name="template-map-advanced">
-        <ElFormItem :error="jsonError ?? undefined" :label="$t('page.manage.smsConfig.templateMap.jsonLabel')" class="mb-8px">
-          <ElInput
-            v-model="rawJson"
-            type="textarea"
-            :autosize="{ minRows: 3, maxRows: 8 }"
-            :placeholder="$t('page.manage.smsConfig.templateMap.jsonPlaceholder')"
-          />
-          <div class="mt-4px text-12px text-gray-400">{{ $t('page.manage.smsConfig.templateMap.jsonExample') }}</div>
-        </ElFormItem>
-        <ElSpace>
-          <ElButton type="primary" plain @click="applyRawJson">{{ $t('page.manage.smsConfig.templateMap.applyJson') }}</ElButton>
-          <ElButton @click="rawJson = jsonPreview">{{ $t('page.manage.smsConfig.templateMap.copyFromEditor') }}</ElButton>
-        </ElSpace>
-      </ElCollapseItem>
-    </ElCollapse>
   </div>
 </template>
 
 <style scoped></style>
-

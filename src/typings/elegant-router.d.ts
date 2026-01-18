@@ -58,6 +58,7 @@ declare module "@elegant-router/types" {
     "manage_menu": "/manage/menu";
     "manage_role": "/manage/role";
     "manage_sms-config": "/manage/sms-config";
+    "manage_sms-log": "/manage/sms-log";
     "manage_user": "/manage/user";
     "manage_user-detail": "/manage/user-detail/:id";
     "manage_wechat-config": "/manage/wechat-config";
@@ -191,6 +192,7 @@ declare module "@elegant-router/types" {
     | "manage_menu"
     | "manage_role"
     | "manage_sms-config"
+    | "manage_sms-log"
     | "manage_user-detail"
     | "manage_user"
     | "manage_wechat-config"

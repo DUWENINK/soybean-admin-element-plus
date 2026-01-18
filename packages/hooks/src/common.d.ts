@@ -78,7 +78,7 @@ declare namespace Api {
     /** common record */
     type CommonRecord<T = any> = {
       /** record id */
-      id: string | null;
+      id: string ;
     } & T & AuditRecord;
   }
 }

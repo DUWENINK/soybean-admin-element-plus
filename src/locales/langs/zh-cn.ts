@@ -200,6 +200,8 @@ const local: App.I18n.Schema = {
     manage_actionlog: '操作日志',
     manage_cache: '缓存管理',
     'manage_wechat-config': '微信配置',
+    'manage_sms-config': '短信配置',
+    'manage_sms-log': '短信日志',
     'multi-menu': '多级菜单',
     'multi-menu_first': '菜单一',
     'multi-menu_first_child': '菜单一子菜单',

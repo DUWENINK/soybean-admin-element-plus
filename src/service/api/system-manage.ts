@@ -339,3 +339,21 @@ export function fetchSendSmsTestCode(data: Api.SystemManage.SmsTestSendDto) {
     data
   });
 }
+
+/** get sms log list */
+export function fetchGetSmsLogList(params?: Api.SystemManage.SmsLogPageRequest) {
+  return request<Api.SystemManage.SmsLogList>({
+    url: '/api/SmsLog/Search',
+    method: 'post',
+    data: params
+  });
+}
+
+/** delete sms log */
+export function fetchDeleteSmsLog(ids: string[]) {
+  return request<boolean>({
+    url: '/api/SmsLog/BatchDelete',
+    method: 'post',
+    data: ids
+  });
+}

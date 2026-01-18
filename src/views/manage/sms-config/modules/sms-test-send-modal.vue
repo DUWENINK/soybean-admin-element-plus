@@ -100,6 +100,7 @@ watch(
         <ElSelect v-model="model.purpose" :placeholder="$t('page.manage.smsConfig.testDialog.form.purpose')">
           <ElOption v-for="opt in purposeOptions" :key="opt.value" :label="opt.label" :value="opt.value" />
         </ElSelect>
+
       </ElFormItem>
       <ElFormItem :label="$t('page.manage.smsConfig.testDialog.code')" prop="code">
         <ElInput v-model="model.code" :placeholder="$t('page.manage.smsConfig.testDialog.form.code')" />
