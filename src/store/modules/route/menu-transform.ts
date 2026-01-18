@@ -79,7 +79,7 @@ function getComponentPath(menu: Api.SystemManage.Menu, hasLayoutParent = false):
   }
 
   if (menu.menuType === 'Folder') {
-    return 'layout.base';
+    return hasLayoutParent ? 'layout.blank' : 'layout.base';
   }
 
   // Page type - use placeholder component that shows "Component not configured"

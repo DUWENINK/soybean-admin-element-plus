@@ -154,6 +154,7 @@ watch(
             :autosize="{ minRows: 3, maxRows: 8 }"
             :placeholder="$t('page.manage.smsConfig.templateMap.jsonPlaceholder')"
           />
+          <div class="mt-4px text-12px text-gray-400">{{ $t('page.manage.smsConfig.templateMap.jsonExample') }}</div>
         </ElFormItem>
         <ElSpace>
           <ElButton type="primary" plain @click="applyRawJson">{{ $t('page.manage.smsConfig.templateMap.applyJson') }}</ElButton>

@@ -300,15 +300,15 @@ export const generatedRoutes: GeneratedRoute[] = [
           roles: ['R_SUPER']
         }
       },
-      {
-        name: 'manage_sms-config',
-        path: '/manage/sms-config',
-        component: 'view.manage_sms-config',
-        meta: {
-          title: 'manage_sms-config',
-          i18nKey: 'route.manage_sms-config'
-        }
-      },
+      // {
+      //   name: 'manage_sms-config',
+      //   path: '/manage/sms-config',
+      //   component: 'view.manage_sms-config',
+      //   meta: {
+      //     title: 'manage_sms-config',
+      //     i18nKey: 'route.manage_sms-config'
+      //   }
+      // },
       {
         name: 'manage_user',
         path: '/manage/user',

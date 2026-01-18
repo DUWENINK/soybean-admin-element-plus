@@ -644,7 +644,7 @@ const local: App.I18n.Schema = {
           valuePlaceholder: '模版Id（如 SMS_123）',
           advancedTitle: '高级 JSON',
           jsonLabel: 'JSON',
-          jsonPlaceholder: '请输入 JSON，例如：{\"Register\":\"SMS_123\"}',
+          jsonPlaceholder: '请输入 JSON 配置',
           applyJson: '应用到编辑器',
           copyFromEditor: '从编辑器回填',
           invalidJson: 'JSON 格式不正确'
@@ -656,7 +656,7 @@ const local: App.I18n.Schema = {
           appSecret: '请输入AppSecret/AccessKeySecret',
           signName: '请输入签名名称',
           sdkAppId: '请输入SDK AppId(腾讯云可选)',
-          templateIdMap: '请输入模版映射JSON，例如：{\"Register\": \"SMS_123\"}'
+          templateIdMap: '请输入模版映射JSON'
         }
       }
     }
